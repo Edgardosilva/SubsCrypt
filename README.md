@@ -16,6 +16,24 @@
 
 ---
 
+## 🤔 ¿Por qué se creó este proyecto?
+
+Como muchos, me encontré con un problema común: **no tenía forma de ver cuánto realmente estaba gastando en plataformas digitales**. Netflix, Spotify, Adobe, servicios de cloud, gaming... todos esparcidos en diferentes servicios, bancos y plataformas de pago.
+
+Los extractos bancarios mostraban cargos aislados, pero no me daban una **visión completa** de:
+- ¿Cuánto gasto al mes en suscripciones?
+- ¿Qué servicios realmente uso?
+- ¿Cuándo se renovarán?
+- ¿Cuáles podría cancelar para ahorrar?
+
+En lugar de conformarme con hojas de cálculo o apps limitadas, **decidí solucionar este problema yo mismo** y construir una plataforma que:
+- ✅ Centralice todas mis suscripciones
+- ✅ Me muestre visualizaciones claras de mis gastos
+- ✅ Me alerte de próximos pagos
+- ✅ Me ayude a tomar decisiones financieras informadas
+
+El resultado es **SubsCrypt**: una solución completa que no solo resuelve mi problema, sino que puede ayudar a cualquiera que enfrente el mismo desafío.
+
 ## 📖 Descripción
 
 SubsCrypt es una aplicación web moderna diseñada para ayudarte a rastrear, analizar y administrar todas tus suscripciones digitales. Con soporte multi-moneda, visualizaciones interactivas y detección automática de logos, mantén el control total de tus gastos recurrentes.
@@ -302,7 +320,7 @@ MIT License - siéntete libre de usar este proyecto como referencia.
 
 **Edgardo Silva**
 - GitHub: [@Edgardosilva](https://github.com/Edgardosilva)
-- LinkedIn: [Tu perfil de LinkedIn]
+- LinkedIn: [Edgardo Silva](https://www.linkedin.com/in/edgardo-silva/)
 
 ---
 
