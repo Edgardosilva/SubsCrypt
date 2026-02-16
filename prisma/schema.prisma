@@ -25,6 +25,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   subscriptions Subscription[]
+  notifications Notification[]
 
   @@map("users")
 }
@@ -145,4 +146,44 @@ model Payment {
   @@index([subscriptionId])
   @@index([paidAt])
   @@map("payments")
+}
+
+// ==========================================
+// Notification Models
+// ==========================================
+
+enum NotificationType {
+  URGENT_PAYMENT
+  UPCOMING_PAYMENT
+  TRIAL_ENDING
+  WEEKLY_SUMMARY
+  PAUSED_REMINDER
+  BUDGET_WARNING
+}
+
+enum Priority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  priority  Priority         @default(LOW)
+  read      Boolean          @default(false)
+  actionUrl String?
+  metadata  Json?
+  createdAt DateTime         @default(now())
+  expiresAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@index([userId, createdAt])
+  @@index([expiresAt])
+  @@map("notifications")
 }

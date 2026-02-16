@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
-import { Bell, User, Settings, LogOut } from "lucide-react";
+import { User, Settings, LogOut } from "lucide-react";
 import Link from "next/link";
+import { NotificationBell } from "./notification-bell";
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -18,10 +19,7 @@ export function Navbar() {
         <p className="text-sm text-white/40">Gestiona tus suscripciones en un solo lugar</p>
       </div>
       <div className="flex items-center gap-4">
-        <button className="relative rounded-lg p-2 text-white/40 transition-colors hover:bg-white/5 hover:text-white">
-          <Bell className="h-5 w-5" />
-          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500" />
-        </button>
+        <NotificationBell />
         
         {/* Avatar Dropdown */}
         <div className="relative">
