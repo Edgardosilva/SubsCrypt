@@ -303,7 +303,7 @@ const ClientDashboard = ({ initialData }) => {
 **Conecta conmigo:**
 - 💼 [LinkedIn](https://www.linkedin.com/in/edgardo-silva/)
 - 🐙 [GitHub](https://github.com/Edgardosilva)
-- 📧 [Email](mailto:tu-email@example.com)
+- 📧 [Email](edgardosilva.es@gmail.com)
 
 ---
 
