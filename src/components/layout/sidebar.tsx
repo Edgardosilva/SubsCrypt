@@ -29,7 +29,7 @@ export function Sidebar() {
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500">
           <CreditCard className="h-4 w-4 text-white" />
         </div>
-        <span className="text-xl font-bold text-white">Suscript</span>
+        <span className="text-xl font-bold text-white">SubsCrypt</span>
       </div>
 
       {/* Navigation */}

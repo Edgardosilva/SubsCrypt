@@ -240,10 +240,64 @@ npm run dev          # Servidor de desarrollo (Turbopack)
 npm run build        # Build de producción
 npm start            # Servidor de producción
 npm run lint         # Ejecutar ESLint
+npm test             # Ejecutar tests con Jest
+npm run test:watch   # Tests en modo watch
+npm run test:coverage # Reporte de cobertura
 npx prisma studio    # Abrir Prisma Studio (GUI de DB)
 npx prisma migrate   # Crear nueva migración
 npx prisma db push   # Sincronizar schema sin migración
 ```
+
+## 🧪 Testing
+
+SubsCrypt incluye una suite de **72 tests automatizados** usando Jest y React Testing Library, cubriendo las áreas críticas de la aplicación:
+
+### Cobertura de Tests
+
+- ✅ **Utilidades de Moneda** (10 tests)
+  - Conversión entre 8 monedas diferentes
+  - Cálculo de portfolios multi-moneda
+  - Precisión en conversiones con decimales
+
+- ✅ **Utilidades de Formato** (14 tests)
+  - Formateo de monedas (CLP, USD, EUR, etc.)
+  - Separación de partes de precios
+  - Cálculo de días hasta próximos pagos
+  - Formateo de fechas
+
+- ✅ **Validación de Datos** (22 tests)
+  - Schemas de suscripciones (crear/actualizar)
+  - Validación de login y registro
+  - Verificación de todos los campos requeridos
+  - Manejo de errores y casos edge
+
+- ✅ **Componentes UI** (26 tests)
+  - Input: labels, errores, interactividad
+  - Button: variantes, tamaños, estados disabled
+  - Accesibilidad y eventos de usuario
+
+### Ejecutar Tests
+
+```bash
+# Ejecutar todos los tests
+npm test
+
+# Modo watch (útil durante desarrollo)
+npm run test:watch
+
+# Ver reporte de cobertura
+npm run test:coverage
+```
+
+### Resultados
+
+```
+Test Suites: 6 passed, 6 total
+Tests:       72 passed, 72 total
+Coverage:    100% en validators, componentes UI y conversión de monedas
+```
+
+Los tests están diseñados para ser **autodescriptivos**, permitiendo entender la funcionalidad de la aplicación al leerlos.
 
 ## 🔐 Seguridad
 

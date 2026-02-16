@@ -295,8 +295,8 @@ export default function DashboardPage() {
                     color: "#e2e8f0",
                     fontSize: "13px",
                   }}
-                  formatter={(value: number, name: string, props: any) => [
-                    formatCurrency(value, selectedCurrency),
+                  formatter={(value, _name, props) => [
+                    formatCurrency(Number(value), selectedCurrency),
                     `${props.payload.count} ${props.payload.count === 1 ? "suscripción" : "suscripciones"}`,
                   ]}
                   labelFormatter={(label, payload) => {
@@ -481,8 +481,8 @@ export default function DashboardPage() {
                         color: "#e2e8f0",
                         fontSize: "13px",
                       }}
-                      formatter={(value: number, name: string, props: any) => [
-                        formatCurrency(value, selectedCurrency),
+                      formatter={(value, _name, props) => [
+                        formatCurrency(Number(value), selectedCurrency),
                         `${props.payload.count} ${props.payload.count === 1 ? "suscripción" : "suscripciones"}`,
                       ]}
                     />
