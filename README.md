@@ -7,381 +7,312 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-336791?style=for-the-badge&logo=postgresql)
 ![Prisma](https://img.shields.io/badge/Prisma-7.3-2D3748?style=for-the-badge&logo=prisma)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?style=for-the-badge&logo=tailwind-css)
+![Jest](https://img.shields.io/badge/Jest-72_tests-C21325?style=for-the-badge&logo=jest)
 
-**Plataforma completa para gestionar todas tus suscripciones digitales en un solo lugar**
+**Plataforma full-stack para rastrear gastos en suscripciones digitales con soporte multi-moneda**
 
-[Demo](#) • [Características](#-características) • [Instalación](#-instalación) • [Tecnologías](#-tecnologías)
+Proyecto de portafolio mostrando arquitectura moderna de Next.js 16, autenticación segura, y visualización de datos
 
 </div>
 
 ---
 
-## 🤔 ¿Por qué se creó este proyecto?
+## 🎯 El Problema
 
-Como muchos, me encontré con un problema común: **no tenía forma de ver cuánto realmente estaba gastando en plataformas digitales**. Netflix, Spotify, Adobe, servicios de cloud, gaming... todos esparcidos en diferentes servicios, bancos y plataformas de pago.
+Estaba suscrito a muchas plataformas digitales, con el tiempo se fueron acumulando y llegó un punto en el que no sabía cuanto gastaba ni de donde se hacían los cobros, en que fecha, cuanto, etc.
 
-Los extractos bancarios mostraban cargos aislados, pero no me daban una **visión completa** de:
-- ¿Cuánto gasto al mes en suscripciones?
-- ¿Qué servicios realmente uso?
-- ¿Cuándo se renovarán?
-- ¿Cuáles podría cancelar para ahorrar?
+Netflix en USD, Spotify en CLP, Adobe Creative Cloud, AWS, GitHub Pro... Todos cargados en diferentes tarjetas, bancos, y países. Mi app de banco mostraba cargos aislados, pero no me daban respuesta a:
 
-En lugar de conformarme con hojas de cálculo o apps limitadas, **decidí solucionar este problema yo mismo** y construir una plataforma que:
-- ✅ Centralice todas mis suscripciones
-- ✅ Me muestre visualizaciones claras de mis gastos
-- ✅ Me alerte de próximos pagos
-- ✅ Me ayude a tomar decisiones financieras informadas
+- 💸 **¿Cuál es mi gasto mensual total?** (considerando diferentes monedas)
+- 📅 **¿Cuándo se renovará cada servicio?** (para planificar gastos)
+- 📊 **¿En qué categorías gasto más?** (streaming vs productividad)
+- 💡 **¿Qué servicios podría cancelar?** (optimización de gastos)
 
-El resultado es **SubsCrypt**: una solución completa que no solo resuelve mi problema, sino que puede ayudar a cualquiera que enfrente el mismo desafío.
+## 🚀 La Solución Técnica
 
-## 📖 Descripción
+En lugar de usar hojas de cálculo o apps limitadas, **construí SubsCrypt desde cero** como un ejercicio de desarrollo full-stack, enfocándome en:
 
-SubsCrypt es una aplicación web moderna diseñada para ayudarte a rastrear, analizar y administrar todas tus suscripciones digitales. Con soporte multi-moneda, visualizaciones interactivas y detección automática de logos, mantén el control total de tus gastos recurrentes.
+1. **Arquitectura Escalable** → Next.js 16 App Router con Server & Client Components
+2. **Multi-tenancy Seguro** → Autenticación JWT + OAuth con NextAuth.js v5
+3. **Conversión Multi-Moneda** → Sistema de cambio soportando 8 monedas
+4. **Visualización de Datos** → Gráficos interactivos con Recharts
+5. **Testing Estratégico** → 72 tests cubriendo lógica crítica (~35-40% coverage)
 
-## ✨ Características
+**Resultado:** Aplicación muy util que resuelve un problema real.
 
-### 🔐 Autenticación Dual
-- **Login con credenciales** (email/contraseña con bcrypt)
-- **Google OAuth** integrado
-- Sesiones JWT seguras con cookies HTTP-only
-- Middleware de protección de rutas
+## ⚙️ Características Técnicas Implementadas
 
-### 💰 Multi-Moneda
-- Soporte para **8 monedas**: USD, CLP, EUR, GBP, MXN, ARS, BRL, COP
-- Conversión automática en tiempo real
-- Selector de moneda persistente en dashboard
+### 🔐 Sistema de Autenticación Completo
+```typescript
+// Dual authentication: Credentials + Google OAuth
+- NextAuth.js v5 (beta) con JWT strategy
+- Passwords hasheados con bcrypt (10 salt rounds)
+- HTTP-only cookies (XSS protection)
+- Middleware para rutas protegidas
+- PrismaAdapter para persistencia de sesiones
+```
 
-### 📊 Dashboard Interactivo
-- **Gráfico circular** de distribución por categorías (Recharts)
-- **Gráfico de líneas** con tendencias de gasto (últimos 6 meses)
-- Estadísticas en tiempo real: total mensual, anual, próximos pagos
-- Vista por categoría con pills compactas
-- Selector mensual/anual
+**Decisión de diseño:** JWT en lugar de sessions en DB para mejor escalabilidad en entornos serverless.
 
-### 🎨 Interfaz Moderna
-- **Dark theme** completo y consistente
-- Palette slate-950/900/800 con acentos indigo
-- Tooltips con contraste mejorado
-- Componentes reutilizables (Button, Input, Card, Select)
-- Diseño responsive
+### 💰 Motor de Conversión Multi-Moneda
+```typescript
+// Soporte para 8 monedas con conversión en tiempo real
+convertCurrency(amount, 'USD', 'CLP') // → Conversión a través de USD como base
+convertMultipleCurrencies([...subs], 'EUR') // → Agregar múltiples monedas
+```
+
+**Desafío resuelto:** Usuarios pueden tener Netflix en USD, Spotify en CLP y ver el total en EUR. El sistema convierte todo usando USD como moneda intermedia para evitar tasas cruzadas complejas.
+
+**Monedas soportadas:** USD, CLP, EUR, GBP, MXN, ARS, BRL, COP
+
+### 📊 Dashboard con Visualización de Datos
+- **Gráfico circular** (Recharts PieChart) - Distribución por categorías con tooltips personalizados
+- **Gráfico de líneas** (Recharts LineChart) - Tendencias de gasto de últimos 6 meses
+- **Cálculos dinámicos** - Vista mensual/anual con conversión automática
+- **Estado persistente** - Preferencia de moneda guardada en localStorage
+
+**Optimización:** Server Components para data fetching, Client Components solo donde hay interactividad.
+
+### 🎨 Interfaz de Usuario Consistente
+```typescript
+// Sistema de diseño custom con Tailwind CSS 4
+- Dark theme (slate-950/900/800 palette)
+- Componentes reutilizables: <Button variant="outline" size="lg" />
+- Estados visuales claros (loading, error, empty states)
+- Responsive design (mobile-first approach)
+```
+
+**Componentes creados:** Button (5 variants), Input (con validación visual), Card, Select
 
 ### 🔍 Detección Automática de Logos
-- **80+ servicios reconocidos** automáticamente
-- Integración con simpleicons.org CDN
-- Preview en tiempo real al crear/editar suscripciones
-- Fallback con icono genérico
-
-### 🗂️ Gestión Completa
-- CRUD de suscripciones (Crear, Leer, Actualizar, Eliminar)
-- **10+ categorías**: Streaming, Cloud, Gaming, Fitness, etc.
-- Estados: Activo, Pausado, Cancelado, Prueba
-- Ciclos: Mensual, Anual, Trimestral, Semanal
-- Notas personalizadas
-- Selector de color por suscripción
-
-### 👤 Experiencia de Usuario
-- Avatar dropdown con perfil y logout
-- Navbar responsive con sidebar
-- Mensajes de confirmación
-- Validación con Zod en cliente y servidor
-- Navegación protegida
-
-## 🛠️ Tecnologías
-
-### Frontend
-- **Next.js 16.1.6** - App Router con Turbopack
-- **React 19** - Server & Client Components
-- **TypeScript 5** - Type safety completo
-- **Tailwind CSS 4** - Utility-first styling
-- **Recharts** - Visualizaciones de datos
-- **Lucide React** - Iconografía moderna
-
-### Backend
-- **Next.js API Routes** - Serverless functions
-- **PostgreSQL 18** - Base de datos relacional
-- **Prisma 7.3.0** - ORM con PrismaPg adapter
-- **NextAuth.js v5** - Autenticación y sesiones
-- **bcryptjs** - Hashing de contraseñas
-- **Zod** - Validación de schemas
-
-### DevOps & Tools
-- **ESLint** - Linting
-- **PostCSS** - CSS processing
-- **Git** - Control de versiones
-
-## 📁 Estructura del Proyecto
-
-```
-SubsCrypt/
-├── prisma/
-│   └── schema.prisma          # Modelos de base de datos
-├── src/
-│   ├── app/
-│   │   ├── (dashboard)/       # Rutas protegidas
-│   │   │   ├── dashboard/     # Dashboard principal
-│   │   │   ├── subscriptions/ # CRUD suscripciones
-│   │   │   └── settings/      # Configuración de usuario
-│   │   ├── api/               # API Routes
-│   │   │   ├── auth/          # Endpoints de autenticación
-│   │   │   ├── dashboard/     # Stats y trends
-│   │   │   └── subscriptions/ # CRUD API
-│   │   ├── login/             # Página de login
-│   │   ├── register/          # Página de registro
-│   │   ├── layout.tsx         # Layout raíz
-│   │   └── page.tsx           # Landing page
-│   ├── components/
-│   │   ├── layout/            # Navbar, Sidebar
-│   │   ├── ui/                # Button, Input, Card, Select
-│   │   └── providers.tsx      # SessionProvider
-│   ├── lib/
-│   │   ├── auth.ts            # NextAuth config
-│   │   ├── prisma.ts          # Prisma client
-│   │   ├── services/          # Business logic
-│   │   ├── utils/             # Helpers
-│   │   └── validators/        # Zod schemas
-│   ├── types/
-│   │   └── next-auth.d.ts     # Type extensions
-│   └── middleware.ts          # Route protection
-├── .env                       # Variables de entorno
-├── next.config.ts             # Next.js config
-├── tailwind.config.ts         # Tailwind config
-├── tsconfig.json              # TypeScript config
-└── package.json               # Dependencias
-
+```typescript
+// 80+ servicios reconocidos vía simpleicons.org
+findKnownLogo('Netflix') // → Returns CDN URL
+// Fallback: Iniciales con gradiente si servicio desconocido
 ```
 
-## 🚀 Instalación
+**Optimización:** Lazy loading de imágenes + fallback instantáneo.
 
-### Prerrequisitos
-
-- Node.js 18+ y npm/pnpm/yarn
-- PostgreSQL 14+ instalado y ejecutándose
-- Cuenta de Google Cloud (para OAuth)
-
-### Pasos
-
-1. **Clonar el repositorio**
-```bash
-git clone https://github.com/Edgardosilva/SubsCrypt.git
-cd SubsCrypt
-```
-
-2. **Instalar dependencias**
-```bash
-npm install
-```
-
-3. **Configurar variables de entorno**
-
-Crea un archivo `.env` en la raíz del proyecto:
-
-```env
-# Database
-DATABASE_URL="postgresql://usuario:contraseña@localhost:5432/subscrypt?schema=public"
-
-# NextAuth
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="tu-secret-generado-con-openssl"  # Genera con: openssl rand -base64 32
-
-# Google OAuth (Opcional)
-GOOGLE_CLIENT_ID="tu-google-client-id"
-GOOGLE_CLIENT_SECRET="tu-google-client-secret"
-```
-
-4. **Configurar Google OAuth** (Opcional)
-
-Si deseas usar login con Google:
-- Ve a [Google Cloud Console](https://console.cloud.google.com/)
-- Crea un nuevo proyecto
-- Habilita Google+ API
-- Crea credenciales OAuth 2.0
-- Authorized redirect URIs: `http://localhost:3000/api/auth/callback/google`
-
-5. **Generar el cliente Prisma**
-```bash
-npx prisma generate
-```
-
-6. **Ejecutar migraciones**
-```bash
-npx prisma migrate dev --name init
-```
-
-7. **Iniciar servidor de desarrollo**
-```bash
-npm run dev
-```
-
-8. **Abrir en el navegador**
-
-Visita [http://localhost:3000](http://localhost:3000)
-
-## 📊 Esquema de Base de Datos
-
+### 🗂️ CRUD Completo de Suscripciones
 ```prisma
-User {
-  id, name, email, password, image
-  subscriptions[]
+model Subscription {
+  price       Float
+  currency    String        // Multi-currency support
+  cycle       BillingCycle  // WEEKLY | MONTHLY | QUARTERLY | ANNUAL
+  category    Category      // 10+ categories
+  status      Status        // ACTIVE | PAUSED | CANCELLED | TRIAL
+  nextBilling DateTime      // Calculated billing date
+}
+```
+
+**API Routes implementadas:**
+- `GET /api/subscriptions` - Listar con filtros
+- `POST /api/subscriptions` - Crear con validación Zod
+- `GET /api/subscriptions/[id]` - Ver detalle
+- `PATCH /api/subscriptions/[id]` - Actualizar parcial
+- `DELETE /api/subscriptions/[id]` - Soft delete
+
+---
+
+## 🧪 Testing Strategy
+
+Implementé **72 tests automatizados** con enfoque estratégico en áreas de alto riesgo:
+
+### Cobertura por Área
+
+| Categoría | Tests | Cobertura | Justificación |
+|-----------|-------|-----------|---------------|
+| **Currency Utils** | 10 | 100% | Core feature - errores aquí = datos incorrectos |
+| **Formatting Utils** | 11 | 81% | UX crítico - formateo de precios y fechas |
+| **Zod Validators** | 22 | 100% | Data integrity - previene corrupción de DB |
+| **UI Components** | 26 | 100% | Input/Button usados en toda la app |
+
+---
+
+## 🛠️ Stack Tecnológico
+
+### Core Framework
+- **Next.js 16.1.6** - App Router, Server Components, Turbopack, Route Handlers
+- **React 19** - Latest features con uso estratégico de Server vs Client Components
+- **TypeScript 5** - Type safety completo, strict mode habilitado
+
+### Base de Datos & ORM
+- **PostgreSQL 18** - Base de datos relacional con tipos complejos
+- **Prisma 7.3.0** - ORM moderno con PrismaPg adapter para mejor performance
+- **Schema diseñado** - Modelos User, Subscription, Account, Session optimizados
+
+### Autenticación
+- **NextAuth.js v5.0.0-beta** - Última versión con nueva API (`auth()` function)
+- **Dual providers** - Google OAuth + Credentials (email/password)
+- **bcryptjs** - Hashing seguro de contraseñas
+
+### UI & Styling
+- **Tailwind CSS 4** - Utility-first styling con dark theme custom
+- **Recharts** - Librería de gráficos React para data visualization
+- **Lucide React** - Iconos modernos y optimizados
+- **Custom Design System** - Componentes reutilizables con variants
+
+### Validación & Testing
+- **Zod** - Schema validation en cliente y servidor
+- **Jest 30** - Test runner con cobertura estratégica
+- **React Testing Library** - Testing enfocado en comportamiento de usuario
+- **@testing-library/user-event** - Simulación realista de interacciones
+
+### DevTools & Quality
+- **ESLint** - Linting con reglas de Next.js
+- **PostCSS** - CSS processing optimizado
+- **TypeScript strict mode** - Máxima type safety
+
+---
+
+## 📁 Arquitectura del Proyecto
+
+```
+src/
+├── app/                              # Next.js App Router
+│   ├── (dashboard)/                  # Route group - rutas protegidas
+│   │   ├── dashboard/                # Dashboard principal con gráficos
+│   │   ├── subscriptions/            # CRUD UI views
+│   │   │   ├── [id]/                 # Dynamic route - edit page
+│   │   │   └── new/                  # Create subscription
+│   │   └── settings/                 # User settings
+│   ├── api/                          # Backend API Routes
+│   │   ├── auth/[...nextauth]/       # NextAuth handlers
+│   │   ├── dashboard/                # Analytics endpoints
+│   │   │   ├── stats/                # GET stats por moneda
+│   │   │   └── trends/               # GET spending trends
+│   │   └── subscriptions/            # REST API
+│   │       ├── route.ts              # GET all, POST create
+│   │       └── [id]/route.ts         # GET, PATCH, DELETE by ID
+│   ├── (auth)/                       # Auth pages group
+│   │   ├── login/
+│   │   └── register/
+│   └── page.tsx                      # Landing page
+├── components/
+│   ├── ui/                           # Reusable components
+│   │   ├── button.tsx                # 5 variants, 4 sizes
+│   │   ├── input.tsx                 # With label & error states
+│   │   ├── card.tsx                  # Container component
+│   │   └── select.tsx                # Dropdown component
+│   └── layout/                       # Layout components
+│       ├── navbar.tsx                # Top nav with  avatar
+│       └── sidebar.tsx               # Side navigation
+├── lib/
+│   ├── auth.ts                       # NextAuth configuration
+│   ├── prisma.ts                     # Prisma client singleton
+│   ├── services/                     # Business logic layer
+│   │   └── subscription.service.ts   # Subscription operations
+│   ├── utils/                        # Utility functions
+│   │   ├── currency.ts               # Multi-currency conversion
+│   │   ├── logos.ts                  # Logo detection (80+ services)
+│   │   └── index.ts                  # Formatting helpers
+│   └── validators/                   # Zod schemas
+│       ├── auth.ts                   # Login/Register validation
+│       └── subscription.ts           # Subscription validation
+├── types/
+│   └── next-auth.d.ts                # Type augmentation for NextAuth
+├── middleware.ts                     # Route protection middleware
+└── __tests__/                        # Test suite (72 tests)
+    ├── components/ui/                # Component tests
+    ├── lib/utils/                    # Utils tests
+    └── lib/validators/               # Validation tests
+```
+
+**Decisiones de arquitectura:**
+- **Server Components por defecto** - Client Components solo cuando necesario (interactividad, hooks)
+- **API Routes como BFF** - Backend for Frontend pattern, lógica en `/lib/services`
+- **Separation of Concerns** - Validators, services, utils separados para testabilidad
+- **Type Safety End-to-End** - Tipos compartidos entre cliente y servidor
+
+---
+
+## 💡 Desafíos Técnicos Resueltos
+
+### 1. **Conversión Multi-Moneda Precisa**
+**Problema:** Usuarios tienen suscripciones en múltiples monedas, calcular totales es complejo.
+
+**Solución implementada:**
+```typescript
+// Sistema de conversión con USD como moneda base
+const totalConvertido = subscriptions.reduce((acc, sub) => {
+  const inUSD = sub.amount / EXCHANGE_RATES[sub.currency];
+  const inTarget = inUSD * EXCHANGE_RATES[targetCurrency];
+  return acc + inTarget;
+}, 0);
+```
+
+**Tests:** 10 tests cubriendo conversiones simples, cruzadas y portfolios mixtos.
+
+### 2. **NextAuth v5 Beta con Prisma Adapter**
+**Problema:** NextAuth v5 tiene API diferente a v4, documentación limitada.
+
+**Solución implementada:**
+- Usar nueva sintaxis `auth()` en lugar de `getServerSession()`
+- Configurar PrismaAdapter correctamente con tipo de Pool
+- Callbacks personalizados para añadir `user.id` a session
+
+**Aprendizaje:** Early adopter challenges - leer código fuente cuando docs faltan.
+
+### 3. **Optimización de Recharts en Server Components**
+**Problema:** Recharts requiere Client Component, pero data fetching debe ser servidor.
+
+**Solución implementada:**
+```typescript
+// Server Component (dashboard/page.tsx)
+const DashboardPage = async () => {
+  const data = await fetchStats(); // Server-side
+  return <ClientDashboard initialData={data} />; // Hydrate client
 }
 
-Subscription {
-  id, userId, name, description, price, 
-  currency, category, cycle, status, 
-  color, logoUrl, nextBillingDate, notes
+// Client Component solo para interactividad
+"use client";
+const ClientDashboard = ({ initialData }) => {
+  return <LineChart data={initialData} />; // Charts ejecutan en cliente
 }
-
-Account, Session, VerificationToken (NextAuth)
 ```
 
-## 📜 Scripts Disponibles
+### 4. **Testing de Componentes con Dark Theme**
+**Problema:** Testing Library no renderiza estilos, difícil validar variantes visuales.
 
-```bash
-npm run dev          # Servidor de desarrollo (Turbopack)
-npm run build        # Build de producción
-npm start            # Servidor de producción
-npm run lint         # Ejecutar ESLint
-npm test             # Ejecutar tests con Jest
-npm run test:watch   # Tests en modo watch
-npm run test:coverage # Reporte de cobertura
-npx prisma studio    # Abrir Prisma Studio (GUI de DB)
-npx prisma migrate   # Crear nueva migración
-npx prisma db push   # Sincronizar schema sin migración
-```
+**Solución implementada:**
+- Testear clases CSS aplicadas en lugar de estilos computados
+- Verificar lógica condicional (`variant === "destructive"` → `.bg-red-600`)
+- Tests de interacción (onClick, onChange) vs tests visuales
 
-## 🧪 Testing
+---
 
-SubsCrypt incluye una suite de **72 tests automatizados** usando Jest y React Testing Library, cubriendo las áreas críticas de la aplicación:
+## 🔐 Seguridad Implementada
 
-### Cobertura de Tests
+- ✅ **Passwords hasheados** con bcrypt (10 salt rounds)
+- ✅ **JWT tokens** con firma HMAC-SHA256 en cookies HTTP-only
+- ✅ **CSRF protection** automático via NextAuth
+- ✅ **SQL Injection** prevenido por Prisma (prepared statements)
+- ✅ **XSS protection** via React (auto-escaping) + HTTP-only cookies
+- ✅ **Validación dual** - Cliente (UX) y servidor (seguridad) con Zod
+- ✅ **Middleware auth** - Rutas protegidas a nivel de Next.js
+- ✅ **Environment variables** - Secrets nunca en código
 
-- ✅ **Utilidades de Moneda** (10 tests)
-  - Conversión entre 8 monedas diferentes
-  - Cálculo de portfolios multi-moneda
-  - Precisión en conversiones con decimales
 
-- ✅ **Utilidades de Formato** (14 tests)
-  - Formateo de monedas (CLP, USD, EUR, etc.)
-  - Separación de partes de precios
-  - Cálculo de días hasta próximos pagos
-  - Formateo de fechas
+---
 
-- ✅ **Validación de Datos** (22 tests)
-  - Schemas de suscripciones (crear/actualizar)
-  - Validación de login y registro
-  - Verificación de todos los campos requeridos
-  - Manejo de errores y casos edge
 
-- ✅ **Componentes UI** (26 tests)
-  - Input: labels, errores, interactividad
-  - Button: variantes, tamaños, estados disabled
-  - Accesibilidad y eventos de usuario
+## 👤 Sobre el Autor
 
-### Ejecutar Tests
+**Edgardo Silva** - Full Stack Developer
 
-```bash
-# Ejecutar todos los tests
-npm test
-
-# Modo watch (útil durante desarrollo)
-npm run test:watch
-
-# Ver reporte de cobertura
-npm run test:coverage
-```
-
-### Resultados
-
-```
-Test Suites: 6 passed, 6 total
-Tests:       72 passed, 72 total
-Coverage:    100% en validators, componentes UI y conversión de monedas
-```
-
-Los tests están diseñados para ser **autodescriptivos**, permitiendo entender la funcionalidad de la aplicación al leerlos.
-
-## 🔐 Seguridad
-
-- ✅ Contraseñas hasheadas con **bcrypt** (salt rounds: 10)
-- ✅ JWT tokens con firma HMAC-SHA256
-- ✅ Cookies HTTP-only (no accesibles desde JS)
-- ✅ CSRF protection automático (NextAuth)
-- ✅ Validación de inputs con Zod (cliente + servidor)
-- ✅ SQL injection protection (Prisma ORM)
-- ✅ Middleware de autenticación en todas las rutas protegidas
-
-## 🚀 Despliegue a Producción
-
-### Vercel (Recomendado)
-
-1. **Push a GitHub**
-```bash
-git push origin main
-```
-
-2. **Importar en Vercel**
-   - Ve a [vercel.com](https://vercel.com)
-   - Importa el repositorio
-   - Configura variables de entorno
-
-3. **Base de datos**
-   - Usa [Supabase](https://supabase.com) (PostgreSQL gratis)
-   - O [Neon](https://neon.tech) (serverless PostgreSQL)
-   - Actualiza `DATABASE_URL` en Vercel
-
-4. **Ejecutar migraciones**
-```bash
-npx prisma migrate deploy
-```
-
-### Variables de Entorno Necesarias en Producción
-
-```
-DATABASE_URL
-NEXTAUTH_URL=https://tu-dominio.vercel.app
-NEXTAUTH_SECRET
-GOOGLE_CLIENT_ID (opcional)
-GOOGLE_CLIENT_SECRET (opcional)
-```
-
-## 🎯 Roadmap Futuro
-
-- [ ] Sistema de presupuestos por categoría
-- [ ] Notificaciones por email (Resend/Nodemailer)
-- [ ] Exportar datos (CSV/PDF)
-- [ ] Proyección de gastos futuros
-- [ ] Calendario visual de pagos
-- [ ] Tests (Jest + React Testing Library)
-- [ ] Webhooks para recordatorios
-- [ ] Análisis de ahorro potencial
-- [ ] Suscripciones compartidas con división de costos
-- [ ] App móvil (React Native)
-
-## 🤝 Contribuir
-
-Este es un proyecto personal de portafolio, pero las contribuciones son bienvenidas:
-
-1. Fork el proyecto
-2. Crea una rama (`git checkout -b feature/AmazingFeature`)
-3. Commit cambios (`git commit -m 'Add: Nueva característica'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-## 📝 Licencia
-
-MIT License - siéntete libre de usar este proyecto como referencia.
-
-## 👤 Autor
-
-**Edgardo Silva**
-- GitHub: [@Edgardosilva](https://github.com/Edgardosilva)
-- LinkedIn: [Edgardo Silva](https://www.linkedin.com/in/edgardo-silva/)
+**Conecta conmigo:**
+- 💼 [LinkedIn](https://www.linkedin.com/in/edgardo-silva/)
+- 🐙 [GitHub](https://github.com/Edgardosilva)
+- 📧 [Email](mailto:tu-email@example.com)
 
 ---
 
 <div align="center">
 
-**⭐ Si este proyecto te fue útil, considera darle una estrella en GitHub ⭐**
+**⭐ Si encuentras útil este proyecto como referencia, considera darle una estrella ⭐**
 
-Construido con 💙 usando Next.js 16 y TypeScript
+*Construido con Next.js 16, TypeScript, PostgreSQL, y mucho ☕*
+
+**SubsCrypt** © 2026 - Proyecto de Portafolio
 
 </div>
