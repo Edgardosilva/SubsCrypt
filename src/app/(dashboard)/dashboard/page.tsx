@@ -324,6 +324,27 @@ export default function DashboardPage() {
               {(() => {
                 const lastMonth = trends.trends[trends.trends.length - 1].total;
                 const prevMonth = trends.trends[trends.trends.length - 2].total;
+                
+                // Manejo de casos especiales
+                if (prevMonth === 0 && lastMonth === 0) {
+                  return (
+                    <span className="text-sm text-white/60">
+                      Sin gastos
+                    </span>
+                  );
+                }
+                
+                if (prevMonth === 0) {
+                  return (
+                    <>
+                      <TrendingUp className="h-4 w-4 text-blue-400" />
+                      <span className="text-sm text-white/60">
+                        Nuevo gasto este mes
+                      </span>
+                    </>
+                  );
+                }
+                
                 const change = ((lastMonth - prevMonth) / prevMonth) * 100;
                 const isIncrease = change > 0;
                 return (
