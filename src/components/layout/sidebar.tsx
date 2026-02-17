@@ -8,9 +8,7 @@ import {
   CreditCard,
   PlusCircle,
   Settings,
-  LogOut,
 } from "lucide-react";
-import { signOut } from "next-auth/react";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -23,7 +21,7 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-10 flex w-64 flex-col border-r border-white/5 bg-slate-900">
+    <aside className="sticky top-0 left-0 z-10 flex h-screen w-64 flex-col border-r border-white/5 bg-slate-900">
       {/* Logo */}
       <div className="flex h-16 items-center gap-2 border-b border-white/5 px-6">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500">
@@ -53,17 +51,6 @@ export function Sidebar() {
           );
         })}
       </nav>
-
-      {/* Sign out */}
-      <div className="border-t border-white/5 p-3">
-        <button
-          onClick={() => signOut({ callbackUrl: "/login" })}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white/50 transition-colors hover:bg-white/5 hover:text-white"
-        >
-          <LogOut className="h-5 w-5" />
-          Sign Out
-        </button>
-      </div>
     </aside>
   );
 }

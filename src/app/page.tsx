@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CreditCard, BarChart3, Bell, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Footer } from "@/components/layout/footer";
 
 const features = [
   {
@@ -92,9 +93,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 py-8 text-center text-sm text-white/40">
-        <p>&copy; {new Date().getFullYear()} Suscript. Todos los derechos reservados.</p>
-      </footer>
+      <Footer />
     </div>
   );
 }

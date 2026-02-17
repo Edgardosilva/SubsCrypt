@@ -406,7 +406,14 @@ export default function DashboardPage() {
                   const startingDayOfWeek = firstDay.getDay();
                   
                   // Agrupar cobros por día
-                  const billsByDay: Record<number, typeof stats.upcomingBills> = {};
+                  const billsByDay: Record<number, Array<{
+                    id: string;
+                    name: string;
+                    price: string;
+                    currency: string;
+                    nextBilling: string;
+                    logo: string | null;
+                  }>> = {};
                   stats?.upcomingBills?.forEach((bill) => {
                     const billDate = new Date(bill.nextBilling);
                     if (billDate.getMonth() === month && billDate.getFullYear() === year) {
