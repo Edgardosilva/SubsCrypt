@@ -2,14 +2,17 @@ import { Github, Linkedin, Mail, Heart } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="mt-16 border-t border-white/10 bg-slate-900 shadow-2xl">
+    <footer className=" border-t border-white/10 bg-slate-900 shadow-2xl">
       <div className="mx-auto max-w-7xl px-6 py-8">
         <div className="grid gap-8 md:grid-cols-3">
           {/* About */}
           <div>
             <h3 className="mb-3 text-sm font-semibold text-white">SubsCrypt</h3>
             <p className="text-sm text-white/60 leading-relaxed">
-              Gestiona todas tus suscripciones en un solo lugar. Controla tus gastos mensuales con visualizaciones claras y notificaciones inteligentes.
+              Gestiona todas tus suscripciones en un solo lugar.
+            </p>
+           <p className="text-sm text-white/60 leading-relaxed">
+              Control de gastos mensuales.
             </p>
           </div>
 
@@ -86,7 +89,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-white/5 pt-6 text-sm text-white/40 md:flex-row">
           <p className="flex items-center gap-1">
-            Hecho con <Heart className="h-4 w-4 text-red-500" /> por{" "}
+            Hecho por{" "}
             <a
               href="https://www.linkedin.com/in/edgardo-silva/"
               target="_blank"
@@ -96,7 +99,7 @@ export function Footer() {
               Edgardo Silva
             </a>
           </p>
-          <p>© {new Date().getFullYear()} SubsCrypt. Proyecto de portafolio.</p>
+          <p>© {new Date().getFullYear()} SubsCrypt.</p>
         </div>
       </div>
     </footer>

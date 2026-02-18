@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
-import { User, Settings, LogOut } from "lucide-react";
+import { User, Settings, LogOut, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { NotificationBell } from "./notification-bell";
 
@@ -11,12 +11,13 @@ export function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-white/5 bg-slate-950/80 px-6 backdrop-blur-sm">
-      <div>
-        <h2 className="text-lg font-semibold text-white">
-          Hola{session?.user?.name ? `, ${session.user.name}` : ""}
-        </h2>
-        <p className="text-sm text-white/40">Gestiona tus suscripciones en un solo lugar</p>
+    <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-white/5 bg-slate-950/80 px-6 backdrop-blur-sm">
+      {/* Logo */}
+      <div className="flex items-center gap-2">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500">
+          <CreditCard className="h-4 w-4 text-white" />
+        </div>
+        <span className="text-xl font-bold text-white">SubsCrypt</span>
       </div>
       <div className="flex items-center gap-4">
         <NotificationBell />

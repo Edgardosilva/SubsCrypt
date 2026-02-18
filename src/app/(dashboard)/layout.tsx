@@ -4,15 +4,18 @@ import { Footer } from "@/components/layout/footer";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-slate-950">
-      <div className="flex">
+    <div className="min-h-screen bg-slate-950 flex flex-col">
+      {/* Navbar - Full Width */}
+      <Navbar />
+      
+      {/* Content Area - Sidebar + Main */}
+      <div className="flex flex-1">
         <Sidebar />
-        <div className="flex-1 flex flex-col min-w-0">
-          <Navbar />
-          <main className="p-6 flex-1">{children}</main>
-          <Footer />
-        </div>
+        <main className="flex-1 p-6 pb-24">{children}</main>
       </div>
+      
+      {/* Footer - Full Width */}
+      <Footer />
     </div>
   );
 }

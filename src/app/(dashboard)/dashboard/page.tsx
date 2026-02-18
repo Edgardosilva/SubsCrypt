@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { formatCurrency, formatCurrencyParts, formatDate, daysUntil } from "@/lib/utils";
 import {
   CreditCard,
@@ -75,6 +76,7 @@ const categoryChartColors: Record<string, string> = {
 };
 
 export default function DashboardPage() {
+  const { data: session } = useSession();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [trends, setTrends] = useState<TrendsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -137,6 +139,14 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
+      {/* Welcome Header */}
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-white">
+          Hola{session?.user?.name ? `, ${session.user.name}` : ""}
+        </h1>
+        <p className="mt-1 text-white/60">Gestiona tus suscripciones en un solo lugar</p>
+      </div>
+
       {/* Hero Section - Total Spending */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 px-6 py-10 sm:px-10 sm:py-14">
         {/* Background glow */}
@@ -246,9 +256,9 @@ export default function DashboardPage() {
 
       {/* Spending Trends & Calendar */}
       {trends?.trends && trends.trends.length > 0 && (
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-6 lg:grid-cols-2 min-h-[400px]">
           {/* Tendencia de Gastos */}
-          <div className="rounded-2xl border border-white/5 bg-slate-900 p-6">
+          <div className="flex flex-col rounded-2xl border border-white/5 bg-slate-900 p-6">
             <div className="mb-5 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-500/10 text-green-400">
                 <TrendingUp className="h-5 w-5" />
@@ -258,7 +268,7 @@ export default function DashboardPage() {
                 <p className="text-xs text-white/40">Últimos 6 meses de historial</p>
               </div>
             </div>
-            <div className="h-[280px] w-full">
+            <div className="min-h-[280px] flex-1 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={trends.trends} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
                 <defs>
@@ -370,7 +380,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Calendario de Cobros */}
-          <div className="rounded-2xl border border-white/5 bg-slate-900 p-6">
+          <div className="flex flex-col rounded-2xl border border-white/5 bg-slate-900 p-6">
             <div className="mb-5 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
                 <Calendar className="h-5 w-5" />
@@ -384,7 +394,7 @@ export default function DashboardPage() {
             </div>
             
             {/* Calendar Grid */}
-            <div>
+            <div className="flex-1 flex flex-col">
               {/* Days of week header */}
               <div className="mb-2 grid grid-cols-7 gap-1">
                 {["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((day) => (
@@ -395,7 +405,7 @@ export default function DashboardPage() {
               </div>
               
               {/* Calendar days */}
-              <div className="grid grid-cols-7 gap-1">
+              <div className="grid grid-cols-7 gap-1 flex-1 content-start">
                 {(() => {
                   const today = new Date();
                   const year = today.getFullYear();
