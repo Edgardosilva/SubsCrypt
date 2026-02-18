@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Bell, CheckCheck } from "lucide-react";
+import { Bell } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { Notification } from "@/generated/prisma";
 
@@ -37,26 +37,23 @@ export function NotificationBell() {
     }
   };
 
-  // Marcar todas como leídas
-  const markAllAsRead = async () => {
-    try {
-      await fetch("/api/notifications", {
-        method: "PATCH",
-      });
 
-      setNotifications((prev) =>
-        prev.map((n) => ({ ...n, read: true }))
-      );
-      setUnreadCount(0);
-    } catch (error) {
-      console.error("Error marking all as read:", error);
-    }
-  };
 
   // Cargar notificaciones al montar y generar automáticamente
   useEffect(() => {
     fetchNotifications(true);
   }, []);
+
+  // Al abrir la campana: marcar todas como leídas automáticamente
+  useEffect(() => {
+    if (isOpen && unreadCount > 0) {
+      // Optimistic update inmediato
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+      setUnreadCount(0);
+      // Persistir en BD en background
+      fetch("/api/notifications", { method: "PATCH" }).catch(() => null);
+    }
+  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Click outside para cerrar
   useEffect(() => {
@@ -124,19 +121,7 @@ export function NotificationBell() {
               <h3 className="text-sm font-semibold text-white">
                 Notificaciones
               </h3>
-              {unreadCount > 0 && (
-                <p className="text-xs text-white/50">{unreadCount} sin leer</p>
-              )}
             </div>
-            {unreadCount > 0 && (
-              <button
-                onClick={markAllAsRead}
-                className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
-              >
-                <CheckCheck className="h-3 w-3" />
-                Marcar todas
-              </button>
-            )}
           </div>
 
           {/* Lista de notificaciones */}

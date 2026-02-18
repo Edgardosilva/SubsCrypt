@@ -41,21 +41,20 @@ export async function createNotification(data: {
 
 /**
  * Genera notificaciones de pagos próximos para un usuario
- * Busca suscripciones activas con pagos en los próximos 7 días
+ * Solo avisa el día anterior (mañana) y el día del cobro (hoy)
  */
 export async function generatePaymentNotifications(userId: string) {
-  const today = new Date();
-  const in7Days = new Date(today);
-  in7Days.setDate(today.getDate() + 7);
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(now.getDate() + 2); // rango: hoy y mañana
 
-  // Obtener suscripciones activas con pagos próximos
   const subscriptions = await prisma.subscription.findMany({
     where: {
       userId,
       status: "ACTIVE",
       nextBilling: {
-        gte: today,
-        lte: in7Days,
+        gte: now,
+        lte: tomorrow,
       },
     },
   });
@@ -66,68 +65,50 @@ export async function generatePaymentNotifications(userId: string) {
     if (!sub.nextBilling) continue;
 
     const daysUntil = daysUntilDate(sub.nextBilling);
+
+    // Solo notificar hoy (0) o mañana (1)
+    if (daysUntil > 1) continue;
+
+    const type = daysUntil === 0 ? "URGENT_PAYMENT" : "UPCOMING_PAYMENT";
     const formattedAmount = formatCurrency(Number(sub.price), sub.currency);
 
-    // Verificar si ya existe una notificación para este pago
+    // Deduplicación por ciclo: si ya existe una notificación para esta
+    // suscripción con el mismo expiresAt (= nextBilling), no crear otra
     const existingNotification = await prisma.notification.findFirst({
       where: {
         userId,
-        type: daysUntil === 0 ? "URGENT_PAYMENT" : "UPCOMING_PAYMENT",
+        type,
+        expiresAt: sub.nextBilling,
         metadata: {
           path: ["subscriptionId"],
           equals: sub.id,
         },
-        createdAt: {
-          gte: new Date(today.setHours(0, 0, 0, 0)),
-        },
       },
     });
 
-    // Si ya existe, no crear duplicado
     if (existingNotification) continue;
 
-    // Pago hoy (urgente)
-    if (daysUntil === 0) {
-      const notification = await createNotification({
-        userId,
-        type: "URGENT_PAYMENT",
-        title: `Pago hoy - ${sub.name}`,
-        message: `Se cargará ${formattedAmount} hoy`,
-        priority: "HIGH",
-        actionUrl: `/subscriptions/${sub.id}`,
-        metadata: {
-          subscriptionId: sub.id,
-          amount: Number(sub.price),
-          currency: sub.currency,
-        },
-        expiresAt: sub.nextBilling,
-      });
-      notifications.push(notification);
-    }
-    // Pago en 1-7 días
-    else if (daysUntil > 0 && daysUntil <= 7) {
-      const dateText = sub.nextBilling.toLocaleDateString("es-ES", {
-        day: "numeric",
-        month: "short",
-      });
+    const notification = await createNotification({
+      userId,
+      type,
+      title: daysUntil === 0
+        ? `Pago hoy — ${sub.name}`
+        : `Pago mañana — ${sub.name}`,
+      message: daysUntil === 0
+        ? `Se cargará ${formattedAmount} hoy`
+        : `Se cargará ${formattedAmount} mañana`,
+      priority: daysUntil === 0 ? "HIGH" : "MEDIUM",
+      actionUrl: `/subscriptions/${sub.id}`,
+      metadata: {
+        subscriptionId: sub.id,
+        amount: Number(sub.price),
+        currency: sub.currency,
+        daysUntil,
+      },
+      expiresAt: sub.nextBilling,
+    });
 
-      const notification = await createNotification({
-        userId,
-        type: "UPCOMING_PAYMENT",
-        title: `Pago próximo - ${sub.name}`,
-        message: `${formattedAmount} en ${daysUntil} ${daysUntil === 1 ? "día" : "días"} (${dateText})`,
-        priority: daysUntil <= 3 ? "MEDIUM" : "LOW",
-        actionUrl: `/subscriptions/${sub.id}`,
-        metadata: {
-          subscriptionId: sub.id,
-          amount: Number(sub.price),
-          currency: sub.currency,
-          daysUntil,
-        },
-        expiresAt: sub.nextBilling,
-      });
-      notifications.push(notification);
-    }
+    notifications.push(notification);
   }
 
   return notifications;
@@ -135,21 +116,20 @@ export async function generatePaymentNotifications(userId: string) {
 
 /**
  * Genera notificaciones para trials que están por terminar
- * Busca suscripciones en trial con menos de 3 días restantes
+ * Solo avisa el día anterior y el día en que termina
  */
 export async function generateTrialEndingNotifications(userId: string) {
-  const today = new Date();
-  const in3Days = new Date(today);
-  in3Days.setDate(today.getDate() + 3);
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(now.getDate() + 2);
 
-  // Obtener trials que terminan pronto
   const trials = await prisma.subscription.findMany({
     where: {
       userId,
       status: "TRIAL",
       nextBilling: {
-        gte: today,
-        lte: in3Days,
+        gte: now,
+        lte: tomorrow,
       },
     },
   });
@@ -160,18 +140,17 @@ export async function generateTrialEndingNotifications(userId: string) {
     if (!sub.nextBilling) continue;
 
     const daysUntil = daysUntilDate(sub.nextBilling);
+    if (daysUntil > 1) continue;
 
-    // Verificar si ya existe notificación
+    // Deduplicación por ciclo usando expiresAt
     const existingNotification = await prisma.notification.findFirst({
       where: {
         userId,
         type: "TRIAL_ENDING",
+        expiresAt: sub.nextBilling,
         metadata: {
           path: ["subscriptionId"],
           equals: sub.id,
-        },
-        createdAt: {
-          gte: new Date(today.setHours(0, 0, 0, 0)),
         },
       },
     });
@@ -179,16 +158,14 @@ export async function generateTrialEndingNotifications(userId: string) {
     if (existingNotification) continue;
 
     const formattedAmount = formatCurrency(Number(sub.price), sub.currency);
-    const dateText = sub.nextBilling.toLocaleDateString("es-ES", {
-      day: "numeric",
-      month: "short",
-    });
 
     const notification = await createNotification({
       userId,
       type: "TRIAL_ENDING",
-      title: `Trial termina ${daysUntil === 0 ? "hoy" : `en ${daysUntil} ${daysUntil === 1 ? "día" : "días"}`} - ${sub.name}`,
-      message: `Se cobrará ${formattedAmount} el ${dateText}. Cancela si no lo necesitas`,
+      title: daysUntil === 0
+        ? `Trial termina hoy — ${sub.name}`
+        : `Trial termina mañana — ${sub.name}`,
+      message: `Se cobrará ${formattedAmount} ${daysUntil === 0 ? "hoy" : "mañana"}. Cancela si no lo necesitas`,
       priority: "HIGH",
       actionUrl: `/subscriptions/${sub.id}`,
       metadata: {
@@ -207,9 +184,43 @@ export async function generateTrialEndingNotifications(userId: string) {
 }
 
 /**
+ * Limpia notificaciones irrelevantes:
+ * 1. Las de pagos ya realizados (expiresAt pasado)
+ * 2. Las "lejanas" del sistema anterior (expiresAt > mañana),
+ *    ya que el nuevo sistema solo genera notificaciones para hoy y mañana
+ */
+export async function cleanupPaidNotifications(userId: string) {
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(now.getDate() + 1);
+  tomorrow.setHours(23, 59, 59, 999);
+
+  // Eliminar pagadas/expiradas
+  await prisma.notification.deleteMany({
+    where: {
+      userId,
+      type: { in: ["UPCOMING_PAYMENT", "URGENT_PAYMENT", "TRIAL_ENDING"] },
+      expiresAt: { lt: now },
+    },
+  });
+
+  // Eliminar notificaciones de más de 1 día de distancia (backlog del sistema antiguo)
+  return await prisma.notification.deleteMany({
+    where: {
+      userId,
+      type: { in: ["UPCOMING_PAYMENT", "TRIAL_ENDING"] },
+      expiresAt: { gt: tomorrow },
+    },
+  });
+}
+
+/**
  * Genera todas las notificaciones para un usuario
  */
 export async function generateAllNotifications(userId: string) {
+  // Primero limpiar las de pagos ya realizados
+  await cleanupPaidNotifications(userId);
+
   const paymentNotifications = await generatePaymentNotifications(userId);
   const trialNotifications = await generateTrialEndingNotifications(userId);
 
@@ -243,8 +254,11 @@ export async function getUserNotifications(userId: string, options?: {
 
   const notifications = await prisma.notification.findMany({
     where,
+    // Ordenar por fecha de pago más próxima (expiresAt = nextBilling)
+    // Las que no tienen fecha de expiración van al final
     orderBy: [
-      { priority: "desc" }, // HIGH primero
+      { expiresAt: "asc" },
+      { priority: "desc" },
       { createdAt: "desc" },
     ],
     take: options?.limit || 50,
