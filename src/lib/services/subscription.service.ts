@@ -187,6 +187,68 @@ export class SubscriptionService {
     };
   }
 
+  static async getWeeklySpendingTrends(userId: string, displayCurrency: string = "CLP", weeks: number = 8) {
+    const trends = [];
+    const now = new Date();
+
+    // Empezar desde el lunes de la semana actual
+    const startOfCurrentWeek = new Date(now);
+    const dayOfWeek = now.getDay() === 0 ? 6 : now.getDay() - 1; // lunes = 0
+    startOfCurrentWeek.setDate(now.getDate() - dayOfWeek);
+    startOfCurrentWeek.setHours(0, 0, 0, 0);
+
+    for (let i = weeks - 1; i >= 0; i--) {
+      const weekStart = new Date(startOfCurrentWeek);
+      weekStart.setDate(startOfCurrentWeek.getDate() - i * 7);
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 7);
+
+      const subscriptions = await prisma.subscription.findMany({
+        where: {
+          userId,
+          status: "ACTIVE",
+          startDate: { lte: weekEnd },
+        },
+      });
+
+      // Gasto semanal equivalente
+      const weeklyTotal = subscriptions.reduce((total, sub) => {
+        const price = Number(sub.price);
+        const convertedPrice = convertCurrency(price, sub.currency, displayCurrency);
+
+        switch (sub.cycle) {
+          case "WEEKLY":
+            return total + convertedPrice;
+          case "MONTHLY":
+            return total + convertedPrice / 4.33;
+          case "QUARTERLY":
+            return total + convertedPrice / (4.33 * 3);
+          case "SEMI_ANNUAL":
+            return total + convertedPrice / (4.33 * 6);
+          case "ANNUAL":
+            return total + convertedPrice / (4.33 * 12);
+          default:
+            return total + convertedPrice / 4.33;
+        }
+      }, 0);
+
+      const weekLabel = weekStart.toLocaleDateString('es-CL', { day: 'numeric', month: 'short' });
+      const weekLabelFull = `Semana del ${weekStart.toLocaleDateString('es-CL', { day: 'numeric', month: 'long' })} al ${new Date(weekEnd.getTime() - 1).toLocaleDateString('es-CL', { day: 'numeric', month: 'long' })}`;
+
+      trends.push({
+        month: weekLabel,
+        monthFull: weekLabelFull,
+        total: Math.round(weeklyTotal * 100) / 100,
+        count: subscriptions.length,
+      });
+    }
+
+    return {
+      trends,
+      displayCurrency,
+    };
+  }
+
   private static calculateNextBilling(
     billingDay: number,
     cycle: string

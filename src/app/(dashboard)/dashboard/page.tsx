@@ -18,6 +18,7 @@ import { findKnownLogo } from "@/lib/utils/logos";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 
 type ViewMode = "monthly" | "yearly";
+type TrendPeriod = "monthly" | "weekly";
 
 interface DashboardStats {
   totalActive: number;
@@ -82,6 +83,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [selectedCurrency, setSelectedCurrency] = useState("CLP");
   const [viewMode, setViewMode] = useState<ViewMode>("monthly");
+  const [trendPeriod, setTrendPeriod] = useState<TrendPeriod>("monthly");
   const [currencyOpen, setCurrencyOpen] = useState(false);
 
   useEffect(() => {
@@ -93,19 +95,10 @@ export default function DashboardPage() {
     async function fetchStats() {
       setLoading(true);
       try {
-        const [statsRes, trendsRes] = await Promise.all([
-          fetch(`/api/dashboard/stats?currency=${selectedCurrency}`),
-          fetch(`/api/dashboard/trends?currency=${selectedCurrency}&months=6`),
-        ]);
-        
-        if (statsRes.ok) {
-          const data = await statsRes.json();
+        const res = await fetch(`/api/dashboard/stats?currency=${selectedCurrency}`);
+        if (res.ok) {
+          const data = await res.json();
           setStats(data);
-        }
-        
-        if (trendsRes.ok) {
-          const trendsData = await trendsRes.json();
-          setTrends(trendsData);
         }
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
@@ -114,7 +107,23 @@ export default function DashboardPage() {
       }
     }
     fetchStats();
-  }, [selectedCurrency]);
+  }, [selectedCurrency]); // solo recarga stats cuando cambia la moneda
+
+  // Fetch exclusivo del gráfico al cambiar el período (sin recargar la página)
+  useEffect(() => {
+    async function fetchTrends() {
+      try {
+        const res = await fetch(`/api/dashboard/trends?currency=${selectedCurrency}&period=${trendPeriod}`);
+        if (res.ok) {
+          const data = await res.json();
+          setTrends(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch trends:", error);
+      }
+    }
+    fetchTrends();
+  }, [trendPeriod, selectedCurrency]);
 
   const handleCurrencySelect = (currency: string) => {
     setSelectedCurrency(currency);
@@ -260,15 +269,40 @@ export default function DashboardPage() {
           {/* Tendencia de Gastos */}
           <div className="flex flex-col rounded-2xl border border-white/5 bg-slate-900 p-6">
             <div className="mb-5 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-500/10 text-green-400">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-500/10 text-green-400">
                 <TrendingUp className="h-5 w-5" />
               </div>
-              <div>
+              <div className="flex-1">
                 <h3 className="font-semibold text-white">Tendencia de Gastos</h3>
-                <p className="text-xs text-white/40">Últimos 6 meses de historial</p>
+                <p className="text-xs text-white/40">
+                  {trendPeriod === "monthly" ? "Últimos 6 meses" : "Últimas 8 semanas"}
+                </p>
+              </div>
+              {/* Botones de período */}
+              <div className="flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 p-1">
+                <button
+                  onClick={() => setTrendPeriod("monthly")}
+                  className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                    trendPeriod === "monthly"
+                      ? "bg-indigo-500 text-white"
+                      : "text-white/50 hover:text-white"
+                  }`}
+                >
+                  Mensual
+                </button>
+                <button
+                  onClick={() => setTrendPeriod("weekly")}
+                  className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                    trendPeriod === "weekly"
+                      ? "bg-indigo-500 text-white"
+                      : "text-white/50 hover:text-white"
+                  }`}
+                >
+                  Semanal
+                </button>
               </div>
             </div>
-            <div className="min-h-[280px] flex-1 w-full">
+            <div className="min-h-[280px] flex-1 w-full relative">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={trends.trends} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
                 <defs>
