@@ -1,13 +1,12 @@
+"use client";
+
 import { Receipt } from "lucide-react";
 import { formatCurrency, formatDate, daysUntil } from "@/lib/utils";
 import { findKnownLogo } from "@/lib/utils/logos";
-import type { DashboardStats } from "@/lib/hooks/useDashboardStats";
+import { useDashboardStore } from "@/lib/store/useDashboardStore";
 
-interface UpcomingBillsProps {
-  stats: DashboardStats | null;
-}
-
-export function UpcomingBills({ stats }: UpcomingBillsProps) {
+export function UpcomingBills() {
+  const stats = useDashboardStore((state) => state.stats);
   return (
     <div className="rounded-2xl border border-white/5 bg-slate-900 p-6">
       <div className="mb-5 flex items-center gap-3">

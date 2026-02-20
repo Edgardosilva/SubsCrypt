@@ -1,39 +1,25 @@
+"use client";
+
 import { ChevronDown } from "lucide-react";
 import { SUPPORTED_CURRENCIES } from "@/lib/utils/currency";
 import { formatCurrency } from "@/lib/utils";
-import type { ViewMode } from "@/lib/hooks/useDashboardStats";
+import { useDashboardStore } from "@/lib/store/useDashboardStore";
 
-interface HeroSectionProps {
-  selectedCurrency: string;
-  viewMode: ViewMode;
-  setViewMode: (mode: ViewMode) => void;
-  currencyOpen: boolean;
-  setCurrencyOpen: (open: boolean) => void;
-  handleCurrencySelect: (currency: string) => void;
-  priceParts: {
-    symbol: string;
-    main: string;
-    decimals: string;
-  };
-  totalActive: number;
-  categoriesCount: number;
-  upcomingBillsCount: number;
-  annualTotal: number;
-}
+export function HeroSection() {
+  // Selectively subscribe to only what this component needs
+  const selectedCurrency = useDashboardStore((state) => state.selectedCurrency);
+  const viewMode = useDashboardStore((state) => state.viewMode);
+  const currencyOpen = useDashboardStore((state) => state.currencyOpen);
+  const priceParts = useDashboardStore((state) => state.priceParts);
+  const stats = useDashboardStore((state) => state.stats);
+  const setViewMode = useDashboardStore((state) => state.setViewMode);
+  const setCurrencyOpen = useDashboardStore((state) => state.setCurrencyOpen);
+  const handleCurrencySelect = useDashboardStore((state) => state.handleCurrencySelect);
 
-export function HeroSection({
-  selectedCurrency,
-  viewMode,
-  setViewMode,
-  currencyOpen,
-  setCurrencyOpen,
-  handleCurrencySelect,
-  priceParts,
-  totalActive,
-  categoriesCount,
-  upcomingBillsCount,
-  annualTotal,
-}: HeroSectionProps) {
+  const totalActive = stats?.totalActive ?? 0;
+  const categoriesCount = Object.keys(stats?.byCategory ?? {}).length;
+  const upcomingBillsCount = stats?.upcomingBills?.length ?? 0;
+  const annualTotal = stats?.annualTotal ?? 0;
   return (
     <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 px-6 py-10 sm:px-10 sm:py-14">
       {/* Background glow */}

@@ -1,16 +1,17 @@
+"use client";
+
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { formatCurrency } from "@/lib/utils";
-import type { TrendPeriod, TrendsData } from "@/lib/hooks/useTrends";
+import { useDashboardStore } from "@/lib/store/useDashboardStore";
 
-interface TrendChartProps {
-  trends: TrendsData;
-  trendPeriod: TrendPeriod;
-  setTrendPeriod: (period: TrendPeriod) => void;
-  selectedCurrency: string;
-}
+export function TrendChart() {
+  const trends = useDashboardStore((state) => state.trends);
+  const trendPeriod = useDashboardStore((state) => state.trendPeriod);
+  const setTrendPeriod = useDashboardStore((state) => state.setTrendPeriod);
+  const selectedCurrency = useDashboardStore((state) => state.selectedCurrency);
 
-export function TrendChart({ trends, trendPeriod, setTrendPeriod, selectedCurrency }: TrendChartProps) {
+  if (!trends?.trends || trends.trends.length === 0) return null;
   return (
     <div className="flex flex-col rounded-2xl border border-white/5 bg-slate-900 p-6">
       <div className="mb-5 flex items-center gap-3">

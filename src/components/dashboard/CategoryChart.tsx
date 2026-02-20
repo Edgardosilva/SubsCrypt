@@ -1,16 +1,15 @@
+"use client";
+
 import { PieChart as PieChartIcon } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { formatCurrency } from "@/lib/utils";
 import { CATEGORY_CHART_COLORS } from "@/lib/constants/categories";
-import type { DashboardStats, ViewMode } from "@/lib/hooks/useDashboardStats";
+import { useDashboardStore } from "@/lib/store/useDashboardStore";
 
-interface CategoryChartProps {
-  stats: DashboardStats | null;
-  viewMode: ViewMode;
-  selectedCurrency: string;
-}
-
-export function CategoryChart({ stats, viewMode, selectedCurrency }: CategoryChartProps) {
+export function CategoryChart() {
+  const stats = useDashboardStore((state) => state.stats);
+  const viewMode = useDashboardStore((state) => state.viewMode);
+  const selectedCurrency = useDashboardStore((state) => state.selectedCurrency);
   return (
     <div className="rounded-2xl border border-white/5 bg-slate-900 p-6">
       <div className="mb-5 flex items-center gap-3">

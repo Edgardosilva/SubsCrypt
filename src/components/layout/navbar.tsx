@@ -1,14 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { User, Settings, LogOut, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { NotificationBell } from "./notification-bell";
+import { useUserStore } from "@/lib/store/useUserStore";
 
 export function Navbar() {
   const { data: session } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const user = useUserStore((state) => state.user);
+  const fetchUser = useUserStore((state) => state.fetchUser);
+
+  // Fetch user data on mount to have updated avatar
+  useEffect(() => {
+    if (session?.user) {
+      fetchUser();
+    }
+  }, [session, fetchUser]);
+
+  // Use store avatar if available, fallback to session
+  const avatar = user?.image || session?.user?.image;
+  const displayName = user?.name || session?.user?.name;
+  const displayEmail = user?.email || session?.user?.email;
 
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-white/5 bg-slate-950/80 px-6 backdrop-blur-sm">
@@ -28,11 +43,11 @@ export function Navbar() {
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-500/20 text-indigo-400 transition-all hover:bg-indigo-500/30"
           >
-            {session?.user?.image ? (
+            {avatar ? (
               <img
-                src={session.user.image}
-                alt={session.user.name ?? "User"}
-                className="h-9 w-9 rounded-full"
+                src={avatar}
+                alt={displayName ?? "User"}
+                className="h-9 w-9 rounded-full object-cover"
               />
             ) : (
               <User className="h-5 w-5" />
@@ -49,10 +64,10 @@ export function Navbar() {
                 {/* User Info */}
                 <div className="border-b border-white/10 px-4 py-3">
                   <p className="text-sm font-medium text-white">
-                    {session?.user?.name ?? "Usuario"}
+                    {displayName ?? "Usuario"}
                   </p>
                   <p className="text-xs text-white/40">
-                    {session?.user?.email ?? ""}
+                    {displayEmail ?? ""}
                   </p>
                 </div>
                 

@@ -1,49 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useUserStore } from "@/lib/store/useUserStore";
 import { ProfileSection } from "@/components/settings/ProfileSection";
 import { PreferencesSection } from "@/components/settings/PreferencesSection";
 import { SessionSection } from "@/components/settings/SessionSection";
 
-interface UserData {
-  id: string;
-  name: string | null;
-  email: string | null;
-  image: string | null;
-  currency: string;
-}
-
 export default function SettingsPage() {
-  const [user, setUser] = useState<UserData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const user = useUserStore((state) => state.user);
+  const loading = useUserStore((state) => state.loading);
+  const fetchUser = useUserStore((state) => state.fetchUser);
+  const updateUser = useUserStore((state) => state.updateUser);
 
   useEffect(() => {
-    async function fetchUser() {
-      try {
-        const res = await fetch("/api/user");
-        if (!res.ok) throw new Error();
-        const data: UserData = await res.json();
-        setUser(data);
-      } catch {
-        // silenciar
-      } finally {
-        setLoading(false);
-      }
-    }
     fetchUser();
-  }, []);
-
-  const handleProfileUpdate = (name: string) => {
-    if (user) setUser({ ...user, name });
-  };
-
-  const handleAvatarUpdate = (image: string) => {
-    if (user) setUser({ ...user, image });
-  };
-
-  const handlePreferencesUpdate = (currency: string) => {
-    if (user) setUser({ ...user, currency });
-  };
+  }, [fetchUser]);
 
   if (loading) {
     return (
@@ -70,13 +41,13 @@ export default function SettingsPage() {
 
       <ProfileSection
         user={user}
-        onProfileUpdate={handleProfileUpdate}
-        onAvatarUpdate={handleAvatarUpdate}
+        onProfileUpdate={(name) => updateUser({ name })}
+        onAvatarUpdate={(image) => updateUser({ image })}
       />
 
       <PreferencesSection
         initialCurrency={user.currency}
-        onPreferencesUpdate={handlePreferencesUpdate}
+        onPreferencesUpdate={(currency) => updateUser({ currency })}
       />
 
       <SessionSection />

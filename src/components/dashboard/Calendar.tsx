@@ -1,11 +1,10 @@
+"use client";
+
 import { Calendar as CalendarIcon } from "lucide-react";
-import type { DashboardStats } from "@/lib/hooks/useDashboardStats";
+import { useDashboardStore } from "@/lib/store/useDashboardStore";
 
-interface CalendarProps {
-  stats: DashboardStats | null;
-}
-
-export function Calendar({ stats }: CalendarProps) {
+export function Calendar() {
+  const stats = useDashboardStore((state) => state.stats);
   return (
     <div className="flex flex-col rounded-2xl border border-white/5 bg-slate-900 p-6">
       <div className="mb-5 flex items-center gap-3">
