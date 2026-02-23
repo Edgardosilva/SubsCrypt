@@ -53,6 +53,7 @@ export default function NewSubscriptionPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -82,6 +83,36 @@ export default function NewSubscriptionPage() {
       }
       return updated;
     });
+  }
+
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingLogo(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload/logo", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        alert(error.error || "Error al subir el archivo");
+        return;
+      }
+
+      const { url } = await res.json();
+      setFormData((prev) => ({ ...prev, logo: url }));
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      alert("Error al subir el archivo");
+    } finally {
+      setUploadingLogo(false);
+    }
   }
 
   const previewLogo = formData.logo || findKnownLogo(formData.name);
@@ -206,14 +237,65 @@ export default function NewSubscriptionPage() {
                   value={formData.url}
                   onChange={handleChange}
                 />
-                <Input
-                  id="logo"
-                  name="logo"
-                  label="URL del Logo"
-                  placeholder="https://ejemplo.com/logo.png"
-                  value={formData.logo}
-                  onChange={handleChange}
-                />
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-white">
+                    Logo
+                  </label>
+                  <div className="space-y-2">
+                    <Input
+                      id="logo"
+                      name="logo"
+                      placeholder="https://ejemplo.com/logo.png"
+                      value={formData.logo}
+                      onChange={handleChange}
+                    />
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-white/10" />
+                      </div>
+                      <div className="relative flex justify-center text-xs">
+                        <span className="bg-slate-900 px-2 text-white/40">o sube un archivo</span>
+                      </div>
+                    </div>
+                    <label
+                      htmlFor="file-upload"
+                      className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10"
+                    >
+                      {uploadingLogo ? (
+                        <>
+                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+                          Subiendo...
+                        </>
+                      ) : (
+                        <>
+                          <svg
+                            className="h-4 w-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                            />
+                          </svg>
+                          Seleccionar archivo
+                        </>
+                      )}
+                    </label>
+                    <input
+                      id="file-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                      disabled={uploadingLogo}
+                      className="hidden"
+                    />
+                    <p className="text-xs text-white/40">PNG, JPG, SVG (máx. 2MB)</p>
+                  </div>
+                </div>
               </div>
             </div>
 
