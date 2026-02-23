@@ -104,7 +104,12 @@ export default function EditSubscriptionPage() {
     fetchSubscription();
   }, [id, router]);
 
-  const { logoUrl: previewLogo, isLoading: logoLoading } = useLogoPreview(formData.name, "");
+  const { logoUrl: previewLogo, isLoading: logoLoading, brandColor } = useLogoPreview(formData.name, "");
+
+  // Auto-sync color tag with brand color when logo is detected
+  useEffect(() => {
+    setFormData((prev) => ({ ...prev, color: brandColor }));
+  }, [brandColor]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
@@ -225,13 +230,6 @@ export default function EditSubscriptionPage() {
 
             <div className="space-y-4 border-t border-white/10 pt-6">
               <h3 className="text-sm font-medium text-white">Additional</h3>
-              <div>
-                <label htmlFor="color" className="mb-1.5 block text-sm font-medium text-white">Color Tag</label>
-                <div className="flex items-center gap-3">
-                  <input type="color" id="color" name="color" value={formData.color} onChange={handleChange} className="h-10 w-14 cursor-pointer rounded-lg border border-white/10" />
-                  <span className="text-sm text-white/60">{formData.color}</span>
-                </div>
-              </div>
               <div>
                 <label htmlFor="notes" className="mb-1.5 block text-sm font-medium text-white">Notes</label>
                 <textarea id="notes" name="notes" rows={3} value={formData.notes} onChange={handleChange} className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20" />

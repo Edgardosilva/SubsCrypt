@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { getLogoUrl } from "@/lib/utils/logos";
+import { getLogoUrl, getBrandColor } from "@/lib/utils/logos";
 
 /**
  * Hook que genera una URL de logo auto-detectada con debounce y pre-carga.
@@ -9,11 +9,12 @@ import { getLogoUrl } from "@/lib/utils/logos";
  *
  * @param name - Nombre del servicio que escribe el usuario
  * @param manualLogo - URL ingresada manualmente (tiene prioridad)
- * @returns { logoUrl, isLoading } - URL validada del logo y estado de carga
+ * @returns { logoUrl, isLoading, brandColor } - URL validada del logo, estado de carga y color de marca
  */
 export function useLogoPreview(name: string, manualLogo: string) {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [brandColor, setBrandColor] = useState<string>("#6366f1");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -61,12 +62,14 @@ export function useLogoPreview(name: string, manualLogo: string) {
       img.onload = () => {
         if (!controller.signal.aborted) {
           setLogoUrl(url);
+          setBrandColor(getBrandColor(trimmed));
           setIsLoading(false);
         }
       };
       img.onerror = () => {
         if (!controller.signal.aborted) {
           setLogoUrl(null);
+          setBrandColor("#6366f1");
           setIsLoading(false);
         }
       };
@@ -83,5 +86,5 @@ export function useLogoPreview(name: string, manualLogo: string) {
     };
   }, [name, manualLogo]);
 
-  return { logoUrl, isLoading };
+  return { logoUrl, isLoading, brandColor };
 }

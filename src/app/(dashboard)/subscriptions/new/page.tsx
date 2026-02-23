@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -68,7 +68,12 @@ export default function NewSubscriptionPage() {
     notes: "",
   });
 
-  const { logoUrl: previewLogo, isLoading: logoLoading } = useLogoPreview(formData.name, "");
+  const { logoUrl: previewLogo, isLoading: logoLoading, brandColor } = useLogoPreview(formData.name, "");
+
+  // Auto-sync color tag with brand color when logo is detected
+  useEffect(() => {
+    setFormData((prev) => ({ ...prev, color: brandColor }));
+  }, [brandColor]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
@@ -259,24 +264,6 @@ export default function NewSubscriptionPage() {
             {/* Extras */}
             <div className="space-y-4 border-t border-white/10 pt-6">
               <h3 className="text-sm font-medium text-white">Adicional</h3>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <label htmlFor="color" className="mb-1.5 block text-sm font-medium text-white">
-                    Etiqueta de Color
-                  </label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="color"
-                      id="color"
-                      name="color"
-                      value={formData.color}
-                      onChange={handleChange}
-                      className="h-10 w-14 cursor-pointer rounded-lg border border-white/10"
-                    />
-                    <span className="text-sm text-white/60">{formData.color}</span>
-                  </div>
-                </div>
-              </div>
               <div>
                 <label htmlFor="notes" className="mb-1.5 block text-sm font-medium text-white">
                   Notas

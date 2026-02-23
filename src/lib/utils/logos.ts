@@ -95,6 +95,49 @@ export function getLogoUrl(name: string): string | null {
 }
 
 /**
+ * Devuelve el color de marca (#hex) para un servicio conocido.
+ * Si no se encuentra, devuelve el color por defecto (#6366f1 - indigo).
+ */
+export function getBrandColor(name: string): string {
+  const DEFAULT_COLOR = "#6366f1";
+  const normalized = name.toLowerCase().trim().replace(/\s+/g, "");
+  if (!normalized) return DEFAULT_COLOR;
+
+  const aliases: Record<string, string> = {
+    netflix: "#E50914", spotify: "#1DB954", youtube: "#FF0000",
+    youtubepremium: "#FF0000", youtubemusic: "#FF0000",
+    disney: "#113CCF", "disney+": "#113CCF", disneyplus: "#113CCF",
+    hbo: "#000000", hbomax: "#000000", max: "#002BE7",
+    amazonprime: "#00A8E1", primevideo: "#00A8E1",
+    appletv: "#000000", applemusic: "#FA243C", appleone: "#000000",
+    crunchyroll: "#F47521", twitch: "#9146FF",
+    github: "#181717", githubcopilot: "#181717", gitlab: "#FC6D26",
+    figma: "#F24E1E", canva: "#00C4CC", notion: "#000000",
+    slack: "#4A154B", zoom: "#0B5CFF",
+    dropbox: "#0061FF", googleone: "#4285F4", googledrive: "#4285F4",
+    icloud: "#3693F3", onedrive: "#0078D4",
+    microsoft365: "#0078D4", office: "#0078D4",
+    adobe: "#FF0000", photoshop: "#31A8FF", illustrator: "#FF9A00",
+    creativecloud: "#DA1F26",
+    chatgpt: "#10A37F", openai: "#10A37F", claude: "#D97757", cursor: "#000000",
+    xboxgamepass: "#107C10", xbox: "#107C10",
+    playstation: "#003791", psplus: "#003791",
+    nintendo: "#E60012", steam: "#000000",
+    duolingo: "#58CC02", linkedin: "#0A66C2", linkedinpremium: "#0A66C2",
+    nordvpn: "#4687FF", expressvpn: "#DA3940",
+    "1password": "#0094F5", bitwarden: "#175DDC", lastpass: "#D32D27",
+    deezer: "#FEAA2D", tidal: "#000000",
+    paramount: "#0064FF", "paramount+": "#0064FF", paramountplus: "#0064FF",
+    "star+": "#C724FF", starplus: "#C724FF",
+    mubi: "#000000", vercel: "#000000", railway: "#000000",
+    digitalocean: "#0080FF", aws: "#FF9900", azure: "#0078D4",
+    heroku: "#430098", cloudflare: "#F38020",
+  };
+
+  return aliases[normalized] || DEFAULT_COLOR;
+}
+
+/**
  * Alias de compatibilidad para código existente que usa findKnownLogo
  */
 export function findKnownLogo(name: string): string | null {
