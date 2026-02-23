@@ -8,7 +8,7 @@ import { markAsRead } from "@/lib/services/notification.service";
  */
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -16,7 +16,8 @@ export async function PATCH(
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const notification = await markAsRead(params.id, session.user.id);
+    const { id } = await params;
+    const notification = await markAsRead(id, session.user.id);
 
     return NextResponse.json({ notification });
   } catch (error) {
