@@ -8,7 +8,7 @@ import { Select } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { findKnownLogo } from "@/lib/utils/logos";
+import { useLogoPreview } from "@/lib/hooks/useLogoPreview";
 
 const categoryOptions = [
   { value: "STREAMING", label: "Streaming" },
@@ -53,12 +53,10 @@ export default function NewSubscriptionPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
-  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    logo: "",
     url: "",
     price: "",
     currency: "CLP",
@@ -70,52 +68,12 @@ export default function NewSubscriptionPage() {
     notes: "",
   });
 
+  const { logoUrl: previewLogo, isLoading: logoLoading } = useLogoPreview(formData.name, "");
+
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
-    setFormData((prev) => {
-      const updated = { ...prev, [name]: value };
-      // Auto-detectar logo cuando cambia el nombre
-      if (name === "name" && !prev.logo) {
-        const detectedLogo = findKnownLogo(value);
-        if (detectedLogo) {
-          updated.logo = detectedLogo;
-        }
-      }
-      return updated;
-    });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   }
-
-  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploadingLogo(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch("/api/upload/logo", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        alert(error.error || "Error al subir el archivo");
-        return;
-      }
-
-      const { url } = await res.json();
-      setFormData((prev) => ({ ...prev, logo: url }));
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      alert("Error al subir el archivo");
-    } finally {
-      setUploadingLogo(false);
-    }
-  }
-
-  const previewLogo = formData.logo || findKnownLogo(formData.name);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -128,6 +86,7 @@ export default function NewSubscriptionPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
+          logo: previewLogo || "",
           price: parseFloat(formData.price),
           billingDay: parseInt(formData.billingDay),
         }),
@@ -175,14 +134,13 @@ export default function NewSubscriptionPage() {
               {/* Logo Preview */}
               <div className="flex items-center gap-4">
                 <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-white/10 p-2">
-                  {previewLogo ? (
+                  {logoLoading ? (
+                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-indigo-400" />
+                  ) : previewLogo ? (
                     <img
                       src={previewLogo}
                       alt="Logo preview"
                       className="h-full w-full object-contain"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
                     />
                   ) : (
                     <span className="text-xl font-bold text-white/40">
@@ -195,7 +153,11 @@ export default function NewSubscriptionPage() {
                     {formData.name || "Nombre del servicio"}
                   </p>
                   <p className="text-xs text-white/40">
-                    {previewLogo ? "Logo detectado automáticamente" : "Ingresa el nombre o una URL de logo"}
+                    {logoLoading
+                      ? "Buscando logo..."
+                      : previewLogo
+                        ? "Logo detectado automáticamente"
+                        : "Ingresa el nombre del servicio"}
                   </p>
                 </div>
               </div>
@@ -228,75 +190,14 @@ export default function NewSubscriptionPage() {
                 value={formData.description}
                 onChange={handleChange}
               />
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Input
-                  id="url"
-                  name="url"
-                  label="URL del Sitio Web"
-                  placeholder="https://netflix.com"
-                  value={formData.url}
-                  onChange={handleChange}
-                />
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-white">
-                    Logo
-                  </label>
-                  <div className="space-y-2">
-                    <Input
-                      id="logo"
-                      name="logo"
-                      placeholder="https://ejemplo.com/logo.png"
-                      value={formData.logo}
-                      onChange={handleChange}
-                    />
-                    <div className="relative">
-                      <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-white/10" />
-                      </div>
-                      <div className="relative flex justify-center text-xs">
-                        <span className="bg-slate-900 px-2 text-white/40">o sube un archivo</span>
-                      </div>
-                    </div>
-                    <label
-                      htmlFor="file-upload"
-                      className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10"
-                    >
-                      {uploadingLogo ? (
-                        <>
-                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white" />
-                          Subiendo...
-                        </>
-                      ) : (
-                        <>
-                          <svg
-                            className="h-4 w-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                            />
-                          </svg>
-                          Seleccionar archivo
-                        </>
-                      )}
-                    </label>
-                    <input
-                      id="file-upload"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileUpload}
-                      disabled={uploadingLogo}
-                      className="hidden"
-                    />
-                    <p className="text-xs text-white/40">PNG, JPG, SVG (máx. 2MB)</p>
-                  </div>
-                </div>
-              </div>
+              <Input
+                id="url"
+                name="url"
+                label="URL del Sitio Web"
+                placeholder="https://netflix.com"
+                value={formData.url}
+                onChange={handleChange}
+              />
             </div>
 
             {/* Billing Info */}
