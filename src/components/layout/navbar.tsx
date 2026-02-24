@@ -2,12 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
-import { User, Settings, LogOut, CreditCard } from "lucide-react";
+import { User, Settings, LogOut, CreditCard, Menu } from "lucide-react";
 import Link from "next/link";
 import { NotificationBell } from "./notification-bell";
 import { useUserStore } from "@/lib/store/useUserStore";
 
-export function Navbar() {
+interface NavbarProps {
+  onMenuToggle?: () => void;
+}
+
+export function Navbar({ onMenuToggle }: NavbarProps) {
   const { data: session } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const user = useUserStore((state) => state.user);
@@ -27,8 +31,14 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-white/5 bg-slate-950/80 px-6 backdrop-blur-sm">
-      {/* Logo */}
+      {/* Left: Hamburger + Logo */}
       <div className="flex items-center gap-2">
+        <button
+          onClick={onMenuToggle}
+          className="rounded-lg p-1.5 text-white/50 hover:bg-white/10 hover:text-white lg:hidden"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500">
           <CreditCard className="h-4 w-4 text-white" />
         </div>
