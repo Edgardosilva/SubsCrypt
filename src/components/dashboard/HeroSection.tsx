@@ -21,17 +21,17 @@ export function HeroSection() {
   const upcomingBillsCount = stats?.upcomingBills?.length ?? 0;
   const annualTotal = stats?.annualTotal ?? 0;
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 px-6 py-10 sm:px-10 sm:py-14">
+    <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-slate-900 via-slate-800 to-indigo-950 px-4 py-8 sm:px-10 sm:py-14">
       {/* Background glow */}
       <div className="pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-indigo-500/20 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-32 right-0 h-56 w-56 rounded-full bg-purple-500/10 blur-3xl" />
 
       {/* Currency Selector - Top Right */}
-      <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
+      <div className="flex justify-end">
         <div className="relative">
           <button
             onClick={() => setCurrencyOpen(!currencyOpen)}
-            className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/80 backdrop-blur-sm transition-all hover:bg-white/10 hover:text-white"
+            className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-medium text-white/80 backdrop-blur-sm transition-all hover:bg-white/10 hover:text-white"
           >
             <span className="text-xs uppercase tracking-wider text-white/50">Moneda</span>
             <span className="font-semibold text-white">{selectedCurrency}</span>
@@ -62,13 +62,13 @@ export function HeroSection() {
       </div>
 
       {/* Main Amount */}
-      <div className="relative flex flex-col items-center text-center">
+      <div className="relative mt-4 flex flex-col items-center text-center sm:mt-6">
         <div className="flex items-baseline justify-center">
-          <span className="text-3xl font-light text-white/70 sm:text-4xl">{priceParts.symbol}</span>
-          <span className="text-6xl font-extralight tracking-tight text-white sm:text-8xl">
+          <span className="text-2xl font-light text-white/70 sm:text-4xl">{priceParts.symbol}</span>
+          <span className="text-5xl font-extralight tracking-tight text-white sm:text-8xl">
             {priceParts.main}
           </span>
-          <span className="ml-1 text-2xl font-light text-white/50 sm:text-3xl">{priceParts.decimals}</span>
+          <span className="ml-1 text-xl font-light text-white/50 sm:text-3xl">{priceParts.decimals}</span>
         </div>
         <p className="mt-3 text-xs font-medium uppercase tracking-[0.25em] text-white/40">
           {viewMode === "monthly" ? "Gasto Mensual Total" : "Gasto Anual Total"}
@@ -102,21 +102,21 @@ export function HeroSection() {
       </div>
 
       {/* Quick Stats Row */}
-      <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-center backdrop-blur-sm">
-          <p className="text-2xl font-semibold text-white">{totalActive}</p>
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="rounded-xl border border-white/5 bg-white/5 px-3 py-3 text-center backdrop-blur-sm">
+          <p className="text-xl font-semibold text-white sm:text-2xl">{totalActive}</p>
           <p className="mt-0.5 text-xs text-white/40">Activas</p>
         </div>
-        <div className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-center backdrop-blur-sm">
-          <p className="text-2xl font-semibold text-white">{categoriesCount}</p>
+        <div className="rounded-xl border border-white/5 bg-white/5 px-3 py-3 text-center backdrop-blur-sm">
+          <p className="text-xl font-semibold text-white sm:text-2xl">{categoriesCount}</p>
           <p className="mt-0.5 text-xs text-white/40">Categorías</p>
         </div>
-        <div className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-center backdrop-blur-sm">
-          <p className="text-2xl font-semibold text-white">{upcomingBillsCount}</p>
+        <div className="rounded-xl border border-white/5 bg-white/5 px-3 py-3 text-center backdrop-blur-sm">
+          <p className="text-xl font-semibold text-white sm:text-2xl">{upcomingBillsCount}</p>
           <p className="mt-0.5 text-xs text-white/40">Próximos pagos</p>
         </div>
-        <div className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-center backdrop-blur-sm">
-          <p className="text-2xl font-semibold text-emerald-400">
+        <div className="rounded-xl border border-white/5 bg-white/5 px-3 py-3 text-center backdrop-blur-sm">
+          <p className="truncate text-base font-semibold text-emerald-400 sm:text-xl">
             {formatCurrency(annualTotal / 365, selectedCurrency)}
           </p>
           <p className="mt-0.5 text-xs text-white/40">Por día</p>

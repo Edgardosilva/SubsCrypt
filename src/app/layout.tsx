@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { Providers } from "@/components/providers";
 import "./globals.css";
@@ -13,14 +13,20 @@ export const metadata: Metadata = {
   description: "Manage all your digital subscriptions in one place",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased bg-gray-50`}>
+    <html lang="en" className="overflow-x-hidden">
+      <body className={`${inter.variable} font-sans antialiased bg-gray-50 overflow-x-hidden`}>
         <Providers>{children}</Providers>
       </body>
     </html>
