@@ -25,8 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="overflow-x-hidden">
-      <body className={`${inter.variable} font-sans antialiased bg-gray-50 overflow-x-hidden`}>
+    <html lang="en">
+      <body className={`${inter.variable} font-sans antialiased bg-gray-50`}>
         <Providers>{children}</Providers>
       </body>
     </html>
