@@ -102,9 +102,10 @@ export class SubscriptionService {
     const in30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
     const upcomingBills = subscriptions
+      .filter((sub) => sub.nextBilling !== null)
       .map((sub) => ({
         ...sub,
-        nextBilling: this.computeNextBillingDate(sub.nextBilling, sub.cycle),
+        nextBilling: this.computeNextBillingDate(sub.nextBilling!, sub.cycle),
       }))
       .filter((sub) => sub.nextBilling >= now && sub.nextBilling <= in30Days)
       .sort((a, b) => a.nextBilling.getTime() - b.nextBilling.getTime())
