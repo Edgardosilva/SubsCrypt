@@ -98,18 +98,17 @@ export class SubscriptionService {
 
     const annualTotal = monthlyTotal * 12;
 
-    const upcomingBills = await prisma.subscription.findMany({
-      where: {
-        userId,
-        status: "ACTIVE",
-        nextBilling: {
-          gte: new Date(),
-          lte: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-        },
-      },
-      orderBy: { nextBilling: "asc" },
-      take: 5,
-    });
+    const now = new Date();
+    const in30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+    const upcomingBills = subscriptions
+      .map((sub) => ({
+        ...sub,
+        nextBilling: this.computeNextBillingDate(sub.nextBilling, sub.cycle),
+      }))
+      .filter((sub) => sub.nextBilling >= now && sub.nextBilling <= in30Days)
+      .sort((a, b) => a.nextBilling.getTime() - b.nextBilling.getTime())
+      .slice(0, 5);
 
     const byCategory = subscriptions.reduce(
       (acc, sub) => {
@@ -247,6 +246,33 @@ export class SubscriptionService {
       trends,
       displayCurrency,
     };
+  }
+
+  static computeNextBillingDate(nextBilling: Date, cycle: string): Date {
+    const now = new Date();
+    let next = new Date(nextBilling);
+    while (next < now) {
+      switch (cycle) {
+        case "WEEKLY":
+          next.setDate(next.getDate() + 7);
+          break;
+        case "MONTHLY":
+          next.setMonth(next.getMonth() + 1);
+          break;
+        case "QUARTERLY":
+          next.setMonth(next.getMonth() + 3);
+          break;
+        case "SEMI_ANNUAL":
+          next.setMonth(next.getMonth() + 6);
+          break;
+        case "ANNUAL":
+          next.setFullYear(next.getFullYear() + 1);
+          break;
+        default:
+          return next;
+      }
+    }
+    return next;
   }
 
   private static calculateNextBilling(

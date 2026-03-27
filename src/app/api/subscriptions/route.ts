@@ -10,7 +10,13 @@ export async function GET() {
 
   try {
     const subscriptions = await SubscriptionService.getAll(session!.user!.id!);
-    return NextResponse.json(subscriptions);
+    const normalized = subscriptions.map((sub) => ({
+      ...sub,
+      nextBilling: sub.nextBilling
+        ? SubscriptionService.computeNextBillingDate(sub.nextBilling, sub.cycle).toISOString()
+        : null,
+    }));
+    return NextResponse.json(normalized);
   } catch (err) {
     console.error("Error fetching subscriptions:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
