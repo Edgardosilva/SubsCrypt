@@ -21,10 +21,10 @@ export function HeroSection() {
   const upcomingBillsCount = stats?.upcomingBills?.length ?? 0;
   const annualTotal = stats?.annualTotal ?? 0;
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-slate-900 via-slate-800 to-indigo-950 px-4 py-8 sm:px-10 sm:py-14">
-      {/* Background glow */}
-      <div className="pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-indigo-500/20 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-32 right-0 h-56 w-56 rounded-full bg-purple-500/10 blur-3xl" />
+    <div className="relative overflow-hidden rounded-2xl border border-white/8 bg-[#0d0d17]/80 px-4 py-8 backdrop-blur-sm sm:px-10 sm:py-14">
+      {/* Background glows */}
+      <div className="pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-indigo-500/15 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-32 right-0 h-56 w-56 rounded-full bg-violet-500/8 blur-3xl" />
 
       {/* Currency Selector - Top Right */}
       <div className="flex justify-end">
@@ -40,7 +40,7 @@ export function HeroSection() {
           {currencyOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setCurrencyOpen(false)} />
-              <div className="absolute right-0 z-20 mt-2 w-52 overflow-hidden rounded-xl border border-white/10 bg-slate-800 py-1 shadow-2xl backdrop-blur-xl">
+              <div className="absolute right-0 z-20 mt-2 w-52 overflow-hidden rounded-xl border border-white/9 bg-[#0d0d17]/95 py-1 shadow-2xl backdrop-blur-xl">
                 {SUPPORTED_CURRENCIES.map((currency) => (
                   <button
                     key={currency.value}
@@ -64,11 +64,11 @@ export function HeroSection() {
       {/* Main Amount */}
       <div className="relative mt-4 flex flex-col items-center text-center sm:mt-6">
         <div className="flex items-baseline justify-center">
-          <span className="text-2xl font-light text-white/70 sm:text-4xl">{priceParts.symbol}</span>
-          <span className="text-5xl font-extralight tracking-tight text-white sm:text-8xl">
+          <span className="text-2xl font-light text-white/60 sm:text-4xl">{priceParts.symbol}</span>
+          <span className="font-display text-5xl font-extralight tracking-tight text-white sm:text-8xl">
             {priceParts.main}
           </span>
-          <span className="ml-1 text-xl font-light text-white/50 sm:text-3xl">{priceParts.decimals}</span>
+          <span className="ml-1 text-xl font-light text-white/40 sm:text-3xl">{priceParts.decimals}</span>
         </div>
         <p className="mt-3 text-xs font-medium uppercase tracking-[0.25em] text-white/40">
           {viewMode === "monthly" ? "Gasto Mensual Total" : "Gasto Anual Total"}
@@ -77,13 +77,13 @@ export function HeroSection() {
 
       {/* Toggle Buttons */}
       <div className="mt-8 flex items-center justify-center gap-3">
-        <div className="flex rounded-full border border-white/10 bg-white/5 p-1">
+        <div className="flex rounded-full border border-white/8 bg-white/4 p-1">
           <button
             onClick={() => setViewMode("monthly")}
             className={`rounded-full px-5 py-2 text-sm font-medium transition-all ${
               viewMode === "monthly"
-                ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/25"
-                : "text-white/50 hover:text-white/80"
+                ? "bg-linear-to-r from-indigo-500 to-violet-600 text-white shadow-lg shadow-indigo-500/25"
+                : "text-white/40 hover:text-white/70"
             }`}
           >
             Mensual
@@ -92,8 +92,8 @@ export function HeroSection() {
             onClick={() => setViewMode("yearly")}
             className={`rounded-full px-5 py-2 text-sm font-medium transition-all ${
               viewMode === "yearly"
-                ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/25"
-                : "text-white/50 hover:text-white/80"
+                ? "bg-linear-to-r from-indigo-500 to-violet-600 text-white shadow-lg shadow-indigo-500/25"
+                : "text-white/40 hover:text-white/70"
             }`}
           >
             Anual
@@ -103,23 +103,23 @@ export function HeroSection() {
 
       {/* Quick Stats Row */}
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-xl border border-white/5 bg-white/5 px-3 py-3 text-center backdrop-blur-sm">
-          <p className="text-xl font-semibold text-white sm:text-2xl">{totalActive}</p>
-          <p className="mt-0.5 text-xs text-white/40">Activas</p>
+        <div className="rounded-xl border border-white/6 bg-white/3 px-3 py-3 text-center backdrop-blur-sm">
+          <p className="font-display text-xl font-semibold text-white sm:text-2xl">{totalActive}</p>
+          <p className="mt-0.5 text-xs text-white/35">Activas</p>
         </div>
-        <div className="rounded-xl border border-white/5 bg-white/5 px-3 py-3 text-center backdrop-blur-sm">
-          <p className="text-xl font-semibold text-white sm:text-2xl">{categoriesCount}</p>
-          <p className="mt-0.5 text-xs text-white/40">Categorías</p>
+        <div className="rounded-xl border border-white/6 bg-white/3 px-3 py-3 text-center backdrop-blur-sm">
+          <p className="font-display text-xl font-semibold text-white sm:text-2xl">{categoriesCount}</p>
+          <p className="mt-0.5 text-xs text-white/35">Categorías</p>
         </div>
-        <div className="rounded-xl border border-white/5 bg-white/5 px-3 py-3 text-center backdrop-blur-sm">
-          <p className="text-xl font-semibold text-white sm:text-2xl">{upcomingBillsCount}</p>
-          <p className="mt-0.5 text-xs text-white/40">Próximos pagos</p>
+        <div className="rounded-xl border border-white/6 bg-white/3 px-3 py-3 text-center backdrop-blur-sm">
+          <p className="font-display text-xl font-semibold text-white sm:text-2xl">{upcomingBillsCount}</p>
+          <p className="mt-0.5 text-xs text-white/35">Próximos pagos</p>
         </div>
-        <div className="rounded-xl border border-white/5 bg-white/5 px-3 py-3 text-center backdrop-blur-sm">
-          <p className="truncate text-base font-semibold text-emerald-400 sm:text-xl">
+        <div className="rounded-xl border border-white/6 bg-white/3 px-3 py-3 text-center backdrop-blur-sm">
+          <p className="truncate font-display text-base font-semibold text-emerald-400 sm:text-xl">
             {formatCurrency(annualTotal / 365, selectedCurrency)}
           </p>
-          <p className="mt-0.5 text-xs text-white/40">Por día</p>
+          <p className="mt-0.5 text-xs text-white/35">Por día</p>
         </div>
       </div>
     </div>

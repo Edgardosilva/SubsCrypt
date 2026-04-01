@@ -26,7 +26,7 @@ export default function DashboardPage() {
   if (statsLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-indigo-500/20 border-t-indigo-400" />
       </div>
     );
   }
@@ -34,10 +34,10 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-white">
+        <h1 className="font-display text-3xl font-bold tracking-tight text-white">
           Hola{session?.user?.name ? `, ${session.user.name}` : ""}
         </h1>
-        <p className="mt-1 text-white/60">Gestiona tus suscripciones en un solo lugar</p>
+        <p className="mt-1 text-sm text-white/40">Gestiona tus suscripciones en un solo lugar</p>
       </div>
       <HeroSection />
       <div className="grid gap-6 lg:grid-cols-2 min-h-[400px]">

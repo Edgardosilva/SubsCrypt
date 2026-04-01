@@ -8,13 +8,13 @@ import { useDashboardStore } from "@/lib/store/useDashboardStore";
 export function UpcomingBills() {
   const stats = useDashboardStore((state) => state.stats);
   return (
-    <div className="rounded-2xl border border-white/5 bg-slate-900 p-6">
+    <div className="rounded-2xl border border-white/7 bg-white/3 p-6 backdrop-blur-sm">
       <div className="mb-5 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
           <Receipt className="h-5 w-5" />
         </div>
         <div>
-          <h3 className="font-semibold text-white">Próximos Pagos</h3>
+          <h3 className="font-display font-semibold text-white">Próximos Pagos</h3>
           <p className="text-xs text-white/40">Próximos 30 días</p>
         </div>
       </div>
@@ -26,7 +26,7 @@ export function UpcomingBills() {
             return (
               <div
                 key={bill.id}
-                className="group flex items-center justify-between rounded-xl border border-white/5 bg-white/5 p-4 transition-all hover:border-white/10 hover:bg-white/[0.07]"
+                className="group flex items-center justify-between rounded-xl border border-white/6 bg-white/3 p-4 transition-all hover:border-white/10 hover:bg-white/5"
               >
                 <div className="flex items-center gap-3">
                   {logoUrl ? (
@@ -43,7 +43,7 @@ export function UpcomingBills() {
                       />
                     </div>
                   ) : (
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-xs font-bold text-white">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-indigo-500 to-violet-600 text-xs font-bold text-white">
                       {bill.name.substring(0, 2).toUpperCase()}
                     </div>
                   )}

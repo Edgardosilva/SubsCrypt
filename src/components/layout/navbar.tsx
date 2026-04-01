@@ -30,7 +30,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
   const displayEmail = user?.email || session?.user?.email;
 
   return (
-    <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-white/5 bg-slate-950/80 px-6 backdrop-blur-sm">
+    <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-white/6 bg-[#06060a]/85 px-6 backdrop-blur-md">
       {/* Left: Hamburger + Logo */}
       <div className="flex items-center gap-2">
         <button
@@ -39,10 +39,10 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
         >
           <Menu className="h-5 w-5" />
         </button>
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/30">
           <CreditCard className="h-4 w-4 text-white" />
         </div>
-        <span className="text-xl font-bold text-white">SubsCrypt</span>
+        <span className="font-display text-xl font-bold tracking-tight text-white">SubsCrypt</span>
       </div>
       <div className="flex items-center gap-4">
         <NotificationBell />
@@ -51,7 +51,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
         <div className="relative">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-500/20 text-indigo-400 transition-all hover:bg-indigo-500/30"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-500/15 text-indigo-400 transition-all hover:bg-indigo-500/25 border border-indigo-500/20"
           >
             {avatar ? (
               <img
@@ -70,9 +70,9 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
                 className="fixed inset-0 z-10" 
                 onClick={() => setDropdownOpen(false)} 
               />
-              <div className="absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-xl border border-white/10 bg-slate-900 shadow-2xl">
+              <div className="absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-xl border border-white/9 bg-[#0d0d17]/95 shadow-2xl backdrop-blur-xl">
                 {/* User Info */}
-                <div className="border-b border-white/10 px-4 py-3">
+                <div className="border-b border-white/6 px-4 py-3">
                   <p className="text-sm font-medium text-white">
                     {displayName ?? "Usuario"}
                   </p>

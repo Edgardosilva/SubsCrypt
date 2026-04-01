@@ -11,20 +11,20 @@ export function CategoryChart() {
   const viewMode = useDashboardStore((state) => state.viewMode);
   const selectedCurrency = useDashboardStore((state) => state.selectedCurrency);
   return (
-    <div className="rounded-2xl border border-white/5 bg-slate-900 p-6">
+    <div className="rounded-2xl border border-white/7 bg-white/3 p-6 backdrop-blur-sm">
       <div className="mb-5 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 text-purple-400">
           <PieChartIcon className="h-5 w-5" />
         </div>
         <div>
-          <h3 className="font-semibold text-white">Por Categoría</h3>
+          <h3 className="font-display font-semibold text-white">Por Categoría</h3>
           <p className="text-xs text-white/40">Distribución de gastos ({viewMode === "monthly" ? "mensual" : "anual"})</p>
         </div>
       </div>
       {stats?.byCategory && Object.keys(stats.byCategory).length > 0 ? (
         <>
           {/* Chart */}
-          <div className="h-[320px] w-full">
+          <div className="h-80 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -51,11 +51,11 @@ export function CategoryChart() {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#0f172a",
-                    border: "2px solid rgba(99, 102, 241, 0.3)",
+                    backgroundColor: "#0d0d17",
+                    border: "1px solid rgba(99, 102, 241, 0.2)",
                     borderRadius: "0.75rem",
                     color: "#ffffff",
-                    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.5)",
+                    boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.7)",
                     padding: "12px 16px",
                   }}
                   labelStyle={{ 
@@ -85,7 +85,7 @@ export function CategoryChart() {
                 return (
                   <div
                     key={category}
-                    className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 transition-all hover:border-white/20 hover:bg-white/10"
+                    className="flex items-center gap-2 rounded-full border border-white/8 bg-white/4 px-3 py-1.5 transition-all hover:border-white/15 hover:bg-white/8"
                   >
                     <div
                       className="h-2 w-2 rounded-full"

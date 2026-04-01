@@ -39,10 +39,10 @@ export function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
             href={item.href}
             onClick={onClose}
             className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all",
               isActive
-                ? "bg-indigo-500/10 text-indigo-400"
-                : "text-white/50 hover:bg-white/5 hover:text-white"
+                ? "bg-indigo-500/12 text-indigo-300 border border-indigo-500/20"
+                : "text-white/40 hover:bg-white/4 hover:text-white/80"
             )}
           >
             <item.icon className="h-5 w-5" />
@@ -56,7 +56,7 @@ export function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="sticky top-16 z-10 hidden h-[calc(100vh-4rem)] w-64 flex-col self-start border-r border-white/5 bg-slate-900 lg:flex">
+      <aside className="sticky top-16 z-10 hidden h-[calc(100vh-4rem)] w-60 flex-col self-start border-r border-white/6 bg-[#06060a]/95 backdrop-blur-sm lg:flex">
         {navContent}
       </aside>
 
@@ -72,17 +72,17 @@ export function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
       {/* Mobile drawer */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 flex h-full w-64 flex-col bg-slate-900 shadow-2xl transition-transform duration-300 ease-in-out lg:hidden",
+          "fixed left-0 top-0 z-50 flex h-full w-60 flex-col bg-[#06060a] shadow-2xl transition-transform duration-300 ease-in-out lg:hidden",
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Mobile header */}
-        <div className="flex h-16 items-center justify-between border-b border-white/5 px-4">
+        <div className="flex h-16 items-center justify-between border-b border-white/6 px-4">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/30">
               <CreditCard className="h-4 w-4 text-white" />
             </div>
-            <span className="text-xl font-bold text-white">SubsCrypt</span>
+            <span className="font-display text-xl font-bold tracking-tight text-white">SubsCrypt</span>
           </div>
           <button
             onClick={onClose}

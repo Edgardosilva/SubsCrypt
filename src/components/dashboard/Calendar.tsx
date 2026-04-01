@@ -6,13 +6,13 @@ import { useDashboardStore } from "@/lib/store/useDashboardStore";
 export function Calendar() {
   const stats = useDashboardStore((state) => state.stats);
   return (
-    <div className="flex flex-col rounded-2xl border border-white/5 bg-slate-900 p-6">
+    <div className="flex flex-col rounded-2xl border border-white/7 bg-white/3 p-6 backdrop-blur-sm">
       <div className="mb-5 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
           <CalendarIcon className="h-5 w-5" />
         </div>
         <div>
-          <h3 className="font-semibold text-white capitalize">
+          <h3 className="font-display font-semibold text-white capitalize">
             {new Date().toLocaleDateString("es-ES", { month: "long", year: "numeric" })}
           </h3>
           <p className="text-xs text-white/40">Días de cobro programados</p>
@@ -80,10 +80,10 @@ export function Calendar() {
                   className={`
                     aspect-square relative flex flex-col items-center justify-center rounded-lg text-sm
                     ${isToday 
-                      ? "bg-indigo-500 text-white font-bold ring-2 ring-indigo-400 ring-offset-2 ring-offset-slate-900" 
+                      ? "bg-linear-to-br from-indigo-500 to-violet-600 text-white font-bold ring-2 ring-indigo-400/50 ring-offset-2 ring-offset-transparent" 
                       : hasBills 
-                        ? "bg-red-500/20 text-white font-semibold border border-red-500/50" 
-                        : "text-white/60 hover:bg-white/5"
+                        ? "bg-red-500/15 text-white font-semibold border border-red-500/40" 
+                        : "text-white/50 hover:bg-white/5"
                     }
                   `}
                   title={hasBills ? bills.map(b => b.name).join(", ") : undefined}
