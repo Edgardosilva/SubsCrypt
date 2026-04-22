@@ -24,6 +24,60 @@ export function ProfileSection({ user, onProfileUpdate, onAvatarUpdate }: Profil
   const [profileMsg, setProfileMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  async function compressImage(file: File, maxSizeMB = 2): Promise<File> {
+    const maxBytes = maxSizeMB * 1024 * 1024;
+    if (file.size <= maxBytes) return file;
+
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const canvas = document.createElement("canvas");
+        let { width, height } = img;
+
+        // Reducir dimensiones si son muy grandes
+        const MAX_DIM = 1200;
+        if (width > MAX_DIM || height > MAX_DIM) {
+          if (width > height) {
+            height = Math.round((height * MAX_DIM) / width);
+            width = MAX_DIM;
+          } else {
+            width = Math.round((width * MAX_DIM) / height);
+            height = MAX_DIM;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d")!.drawImage(img, 0, 0, width, height);
+
+        // Reducir calidad hasta que quepa en maxSizeMB
+        let quality = 0.85;
+        const tryCompress = () => {
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) return reject(new Error("No se pudo comprimir la imagen"));
+              if (blob.size <= maxBytes || quality <= 0.1) {
+                resolve(new File([blob], file.name.replace(/\.\w+$/, ".jpg"), { type: "image/jpeg" }));
+              } else {
+                quality -= 0.1;
+                tryCompress();
+              }
+            },
+            "image/jpeg",
+            quality
+          );
+        };
+        tryCompress();
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error("No se pudo leer la imagen"));
+      };
+      img.src = url;
+    });
+  }
+
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -31,8 +85,9 @@ export function ProfileSection({ user, onProfileUpdate, onAvatarUpdate }: Profil
     setAvatarUploading(true);
     setAvatarMsg(null);
     try {
+      const compressed = await compressImage(file);
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", compressed);
 
       const res = await fetch("/api/user/avatar", { method: "POST", body: formData });
       const data = await res.json();
